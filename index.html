@@ -53,7 +53,7 @@ input[type="checkbox"]{accent-color:var(--blue);transform:scale(1.14);margin:3px
 .sliderHead output{display:block;font-size:1.2rem;font-weight:740;color:var(--blue);line-height:1.4}
 .sliderHead .unselected{color:#68768a;font-weight:560;font-size:1rem}
 .sliderTag{white-space:nowrap;color:var(--muted);font-size:.77rem}
-.sliderPanel input[type="range"]{display:block;--pct:50%;width:100%;height:11px;margin:19px 0 9px;appearance:none;-webkit-appearance:none;border:0;border-radius:99px;outline-offset:9px;background:linear-gradient(90deg,var(--blue) 0%,var(--blue) var(--pct),#dbe3ef var(--pct),#dbe3ef 100%);cursor:pointer;touch-action:none}
+.sliderPanel input[type="range"]{touch-action:none;display:block;--pct:50%;width:100%;height:11px;margin:19px 0 9px;appearance:none;-webkit-appearance:none;border:0;border-radius:99px;outline-offset:9px;background:linear-gradient(90deg,var(--blue) 0%,var(--blue) var(--pct),#dbe3ef var(--pct),#dbe3ef 100%);cursor:pointer;touch-action:none}
 .sliderPanel input[type="range"].inactive{background:#dbe3ef}
 .sliderPanel input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:27px;height:27px;border-radius:50%;border:3px solid #fff;background:var(--blue);box-shadow:0 1px 7px rgba(15,73,149,.3);cursor:grab}
 .sliderPanel input[type="range"].inactive::-webkit-slider-thumb{background:#9caabe;box-shadow:0 1px 6px rgba(43,66,95,.18)}
@@ -96,11 +96,22 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
 .reportCard p{white-space:pre-line}
 .achievementItem .reportNote{font-size:.8em;color:#556274}
 @media(max-width:540px){.achievementGrid{grid-template-columns:1fr;gap:10px}.achievementItem{padding:13px}}
+
+/* v1.1: safe manual restart, export/report archive and stronger selection feedback */
+.archiveActions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 18px}
+.archiveActions button{flex:1;min-width:155px}
+.exportStatus{margin:8px 0 15px;color:#364862;font-size:.86rem}
+.pngGallery{display:grid;grid-template-columns:1fr;gap:12px;margin:12px 0}
+.pngGallery figure{margin:0;padding:10px;border:1px solid #d5e2f6;border-radius:12px;background:#f6f9ff;min-width:0}
+.pngGallery img{display:block;width:100%;height:265px;object-fit:cover;object-position:top;background:white;border:1px solid #dfe5ef;border-radius:8px}
+.pngGallery figcaption{font-size:.78rem;line-height:1.6;color:#54637b;margin-top:6px}
+.pngGallery a{display:inline-block;border:1px solid #bbd0ee;border-radius:8px;color:#0b57d0;background:#fff;text-decoration:none;padding:8px 10px;margin-top:6px;font-size:.85rem;font-weight:650}
+.answerPending{border:2px solid #0b57d0 !important;background:#eff5ff !important;color:#0b57d0 !important}
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">滑杆答题与完整报告 · v1.0.0</div></div><span class="pill">不使用 LLM</span></header>
+  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">滑杆答题与完整报告 · v1.1.0</div></div><span class="pill">不使用 LLM</span></header>
   <main>
   <aside id="storageWarning" class="runtimeWarning hidden" role="alert"><strong>此浏览器未能安全保存答题记录或边界设置。</strong>当前页面仍可答题，但刷新或关闭后可能丢失，请及时导出答案。该错误不会清空或覆盖现有答卷。</aside>
   <section id="welcome" class="panel">
@@ -117,7 +128,7 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
       <div class="identityRow"><label>测试昵称（可留空）<input type="text" id="profileName" maxlength="24" placeholder="匿名探索者" autocomplete="off"></label><label>答题者类型<select id="profileType"><option value="human">人类</option><option value="roleplay_ai">AI 角色</option></select></label></div><p id="hashAgeMessage" class="muted"></p><label for="mode">请选择答题量</label>
       <select id="mode"><option value="quick">快速看一眼 · 24 题</option><option value="core" selected>核心测试 · 120 题（推荐）</option><option value="all">全部题库 · 180 题（含扩展和专题）</option></select>
       <label class="age"><input type="checkbox" id="adult">我已经年满 18 岁，知道这些题目只讨论自愿的成人互动或虚构幻想。</label>
-      <button class="primary" id="begin" disabled>开始答题 →</button><p id="cacheHint" class="muted"></p><div class="actions landingLinks"><button type="button" class="secondary" id="toImport">导入结果 / AI 答卷</button><button type="button" class="secondary" id="toPair">双人匹配</button><button type="button" class="secondary" id="toGlossary">咪嘛百科</button><button type="button" class="secondary" id="copyAiPack">复制 AI 答题包</button></div><div id="aiPackPreview" class="hidden"><p class="muted">以下为可复制给 AI 的题目与输出说明。请分批发送，避免模型遗漏题号。</p><textarea id="aiPackText" rows="8" readonly></textarea></div>
+      <button class="primary" id="begin" disabled>开始答题 →</button><button type="button" class="secondary" id="startFresh">重新测试（清空旧答案）</button><p id="cacheHint" class="muted"></p><div class="actions landingLinks"><button type="button" class="secondary" id="toImport">导入结果 / AI 答卷</button><button type="button" class="secondary" id="toPair">双人匹配</button><button type="button" class="secondary" id="toGlossary">咪嘛百科</button><button type="button" class="secondary" id="copyAiPack">复制 AI 答题包</button></div><div id="aiPackPreview" class="hidden"><p class="muted">以下为可复制给 AI 的题目与输出说明。请分批发送，避免模型遗漏题号。</p><textarea id="aiPackText" rows="8" readonly></textarea></div>
     </div>
     <p class="footer">滑杆表示 0～4 的倾向程度；N 表示无所谓，X 表示不确定。所有分析仅供成年人的趣味探索。</p>
   </section>
@@ -142,11 +153,14 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
   <section id="done" class="panel hidden">
     <div class="group">个人分析报告 · 本地计算</div><h1 id="doneTitle">答题记录已生成。</h1>
     <p>下面是根据当前答案计算的趣味报告。复制数据码后，别人可以导入与你比较；数据码不是密码，也不是加密。</p>
-    <div id="stats" class="statusGrid"></div><div class="actions reportActions"><button class="primary" id="jumpResults">查看个人分析 ↓</button><button class="secondary hidden" id="resumeMissing">补完未作答的题目</button><button class="secondary" id="doneToPair">与另一份结果匹配</button><button class="secondary" id="doneHome">返回首页</button></div><div id="reportInline" class="resultBody"></div><div class="sectionTitle">关系边界矩阵 <span class="muted">自愿填写，不影响倾向分数</span></div><p class="muted">未回答、想了解、仅幻想、可协商、没兴趣、明确不接受，各不相同。「可协商」不是同意实际行为。</p><div id="boundaryEditor"></div><div class="sectionTitle">分享我的档案</div><p class="muted">下面的代码包含可还原的答案与边界，不是加密！不要发给不愿意分享的人。没有服务器时不生成伪短码。</p><textarea readonly id="resultCode" rows="5" aria-label="离线数据码"></textarea><div class="actions"><button class="secondary" id="copyCode">复制离线数据码</button><button class="secondary" id="shareReport">复制报告网页链接</button><button class="secondary" id="downloadReport">下载个人报告 JSON</button></div><p class="muted" id="shareStatus">本地文件可以导入代码；只有部署到 HTTPS 地址后，才能给别人发可打开的报告链接。</p>
+    <div id="stats" class="statusGrid"></div><div class="actions reportActions"><button class="primary" id="jumpResults">查看个人分析 ↓</button><button class="secondary hidden" id="resumeMissing">补完未作答的题目</button><button class="secondary" id="doneToPair">与另一份结果匹配</button><button class="secondary" id="doneHome">返回首页</button></div><div id="reportInline" class="resultBody"></div><div class="sectionTitle">关系边界矩阵 <span class="muted">自愿填写，不影响倾向分数</span></div><p class="muted">未回答、想了解、仅幻想、可协商、没兴趣、明确不接受，各不相同。「可协商」不是同意实际行为。</p><div id="boundaryEditor"></div><div class="sectionTitle">分享我的档案</div><p class="muted">下面的代码包含可还原的答案与边界，不是加密！不要发给不愿意分享的人。没有服务器时不生成伪短码。</p><textarea readonly id="resultCode" rows="5" aria-label="离线数据码"></textarea><div class="actions"><button class="secondary" id="copyCode">复制离线数据码</button><button class="secondary" id="shareReport">复制报告网页链接</button><button class="secondary" id="downloadReport">下载个人报告 JSON</button></div><p class="muted" id="shareStatus">本地文件可以导入代码；只有部署到 HTTPS 地址后，才能给别人发可打开的报告链接。</p><div class="sectionTitle">保存我的完整结果</div>
+    <p class="muted">完整 HTML 是一份能离线打开的长篇档案，包含全部报告内容及结果码。长图 PNG 按手机安全尺寸分段，不会裁掉内容；生成后长按图片保存或点图片下方的保存链接。</p>
+    <div class="archiveActions"><button type="button" class="primary" id="saveOwnHtml">保存完整报告 HTML</button><button type="button" class="secondary" id="saveOwnPng">生成报告长图 PNG</button><button type="button" class="secondary" id="retakeDone">保存后重新测试</button></div>
+    <p id="ownExportStatus" class="exportStatus" role="status"></p><div id="ownPngGallery" class="pngGallery"></div>
     <div class="actions"><button class="primary" id="copy">复制 AI 式答案</button><button class="secondary" id="download">下载 JSON 答卷</button><button class="secondary" id="revise">返回修改</button><button class="secondary" id="reset">清空本模式答案</button></div>
     <div id="toast" class="toast hidden" role="status"></div>
     <div class="sectionTitle">原始答卷（可选）</div><p class="muted">文字答卷预览：</p><textarea id="output" readonly spellcheck="false" aria-label="答题文本"></textarea>
-    <p class="footer">导出的文件含有私密偏好信息，请自行妥善保管。本地版没有云端存储。</p>
+    <p class="footer">导出的文件含有私密偏好信息，请自行妥善保管。本地版没有云端存储，重做前务必先保存报告。</p>
   </section>
 
   <section id="importPanel" class="panel hidden">
@@ -156,13 +170,13 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
     <label class="fieldLabel" for="importJsonFile">或者选择答卷 JSON 文件（可选）</label><input type="file" id="importJsonFile" accept=".json,application/json"><div class="identityRow"><label>AI 答卷昵称（仅用于纯题号答案）<input id="importName" maxlength="24" placeholder="某位角色"></label><label>答卷类型（仅用于纯题号答案）<select id="importType"><option value="roleplay_ai">AI 角色</option><option value="human">人类</option></select></label></div>
     <div class="actions"><button class="primary" id="importGo">导入并生成分析</button><button class="secondary" data-home>返回首页</button></div><p id="importFeedback" class="feedback" role="status"></p>
   </section>
-  <section id="importedPanel" class="panel hidden"><div class="group">已导入的结果</div><div id="importedReport" class="resultBody"></div><div class="sectionTitle">复制这份结果</div><textarea id="importedCode" readonly rows="4" aria-label="导入结果转换成的数据码"></textarea><p id="importedFeedback" class="feedback" role="status"></p><div class="actions"><button class="secondary" id="copyImportedCode">复制结果数据码</button><button class="secondary" id="shareImportedLink">复制网页报告链接</button><button class="secondary" id="downloadImported">下载 JSON 报告</button></div><div class="sectionTitle">继续使用</div><div class="actions"><button class="primary" id="importedPair">拿它去双人匹配</button><button class="secondary" data-home>返回首页</button></div></section>
+  <section id="importedPanel" class="panel hidden"><div class="group">已导入的结果</div><div id="importedReport" class="resultBody"></div><div class="sectionTitle">复制这份结果</div><textarea id="importedCode" readonly rows="4" aria-label="导入结果转换成的数据码"></textarea><p id="importedFeedback" class="feedback" role="status"></p><div class="actions"><button class="secondary" id="copyImportedCode">复制结果数据码</button><button class="secondary" id="shareImportedLink">复制网页报告链接</button><button class="secondary" id="downloadImported">下载 JSON 报告</button><button class="secondary" id="saveImportedHtml">保存完整 HTML</button><button class="secondary" id="saveImportedPng">生成长图 PNG</button></div><p id="importedExportStatus" class="exportStatus" role="status"></p><div id="importedPngGallery" class="pngGallery"></div><div class="sectionTitle">继续使用</div><div class="actions"><button class="primary" id="importedPair">拿它去双人匹配</button><button class="secondary" data-home>返回首页</button></div></section>
   <section id="pairPanel" class="panel hidden"><div class="group">双人关系实验室</div><h1>两份档案，看看能擦出什么火花？</h1>
     <p>填入 A 与 B 的数据码。仅依据双方实际回答过的维度和边界计算；没有答案就明确显示缺失，不会瞎编。</p>
     <label class="fieldLabel" for="pairA">A 的数据码</label><textarea id="pairA" rows="3" placeholder="MIMA2-..."></textarea>
     <label class="fieldLabel" for="pairB">B 的数据码</label><textarea id="pairB" rows="3" placeholder="MIMA2-..."></textarea>
     <div class="actions"><button class="secondary" id="pairUseOwnA">将我的答卷填入 A</button><button class="secondary" id="pairUseOwnB">将我的答卷填入 B</button><button class="secondary" id="pairUseImport">将刚导入的结果填入空位</button></div>
-    <div class="actions"><button class="primary" id="pairGo">开始关系分析</button><button class="secondary" data-home>返回首页</button></div><p class="feedback" id="pairFeedback" role="status"></p><div id="pairReport" class="resultBody"></div>
+    <div class="actions"><button class="primary" id="pairGo">开始关系分析</button><button class="secondary" data-home>返回首页</button></div><p class="feedback" id="pairFeedback" role="status"></p><div id="pairReport" class="resultBody"></div><div class="archiveActions"><button type="button" class="secondary" id="savePairHtml">保存双人完整 HTML</button><button type="button" class="secondary" id="savePairPng">生成双人长图 PNG</button></div><p id="pairExportStatus" class="exportStatus" role="status"></p><div id="pairPngGallery" class="pngGallery"></div>
   </section>
   <section id="glossaryPanel" class="panel hidden"><div class="group">MIMA KINKPEDIA</div><h1>咪嘛百科 · 一点就懂</h1><p>不是术语考试。看到不认识的玩法，来这里看简明解释。</p><label class="fieldLabel" for="glossSearch">搜索词条</label><input id="glossSearch" type="search" placeholder="例如：D/s、24/7、Switch"><div class="actions"><button class="secondary" data-home>返回首页</button></div><div id="glossEntries" class="resultBody"></div></section>
   </main>
@@ -223,12 +237,13 @@ function render(){
   rangeInteraction.draft=null;
   sliderVisual(typeof answer==='number'?answer:null,true);
   specialVisual(answer);
+  $('confirmSlider').classList.remove('answerPending');
   $('prev').disabled=state.index===0;
   $('next').textContent=state.index===total-1?'查看当前分析 →':Object.hasOwn(state.answers,q.id)?'下一题 →':'跳过本题 →';
 }
 function navigateTo(index){
   cancelAdvance();state.navEpoch++;
-  rangeInteraction.pointer=null;rangeInteraction.keyboard=null;rangeInteraction.draft=null;
+  rangeInteraction.pointer=null;rangeInteraction.touch=null;rangeInteraction.keyboard=null;rangeInteraction.draft=null;
   rangeInteraction.ignoreNativeChange=true;
   state.index=Math.max(0,Math.min(state.ids.length-1,index));render();
 }
@@ -239,6 +254,7 @@ function choose(qid,value){
   cancelAdvance();unlockNext();rangeInteraction.draft=null;state.answers[qid]=value;persist();
   sliderVisual(typeof value==='number'?value:null,true);
   specialVisual(value);
+  $('confirmSlider').classList.remove('answerPending');
   const total=state.ids.length, completed=state.ids.filter(id=>Object.hasOwn(state.answers,id)).length;
   $('counter').textContent=`第 ${state.index+1} / ${total} 题 · 已选 ${completed}`;
   $('bar').style.width=(completed/Math.max(1,total)*100).toFixed(1)+'%';
@@ -267,7 +283,7 @@ function manualNext(){
 // Neither `input` nor a gesture-origin `change` may commit an answer.
 const range=$('answerSlider');
 const rangeKeys=new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown']);
-const rangeInteraction={pointer:null,keyboard:null,ignoreNativeChange:false,draft:null};
+const rangeInteraction={pointer:null,touch:null,keyboard:null,ignoreNativeChange:false,draft:null};
 range.addEventListener('focus',()=>{if(!rangeInteraction.pointer&&!rangeInteraction.keyboard)rangeInteraction.ignoreNativeChange=false;});
 // Preview and commitment are separate: native slider events may arrive in a different order on touch engines.
 function previewRange(value){
@@ -289,7 +305,8 @@ function markGestureInterrupted(session){
  const draft=rangeInteraction.draft;
  if(draft?.qid===session.qid&&draft?.epoch===session.epoch){
    range.value=String(draft.value);previewRange(draft.value);
-   $('sliderTag').textContent='触控中断：点确认本题或再拖一次';
+   $('sliderTag').textContent='尚未保存 · 请点确认本题';
+   $('confirmSlider').classList.add('answerPending');
  }else restoreSlider();
 }
 function restoreSlider(){
@@ -315,7 +332,7 @@ range.addEventListener('pointerdown',event=>{
   try{range.setPointerCapture(event.pointerId);}catch(err){console.debug('Pointer capture unavailable',err);}
 });
 range.addEventListener('input',()=>{
-  const session=rangeInteraction.pointer||rangeInteraction.keyboard;
+  const session=rangeInteraction.pointer||rangeInteraction.touch||rangeInteraction.keyboard;
   if(!session){if(rangeInteraction.ignoreNativeChange)return;const q=selectedQ();if(!q)return;
     rangeInteraction.draft={qid:q.id,epoch:state.navEpoch,value:Number(range.value)};
   }else{
@@ -329,6 +346,7 @@ range.addEventListener('pointerup',event=>{
   const session=rangeInteraction.pointer;
   if(!session||event.pointerId!==session.id)return;
   rangeInteraction.pointer=null;
+  rangeInteraction.touch=null;
   // Commit the release POSITION, not the native range.value: Safari may update value later.
   // The question ID and epoch belong to pointerdown and cannot migrate to a subsequent question.
   if(session.epoch!==state.navEpoch||selectedQ()?.id!==session.qid)return;
@@ -337,6 +355,29 @@ range.addEventListener('pointerup',event=>{
   range.value=String(finalValue);
   choose(session.qid,finalValue);
 });
+// iOS/WebKit and embedded browsers may finish a native range touch without pointerup.
+// Store a stable origin on touchstart. pointerup remains authoritative when available.
+range.addEventListener('touchstart',event=>{
+  if(!event.touches.length)return;
+  const q=selectedQ();if(!q)return;
+  cancelAdvance();
+  rangeInteraction.touch={qid:q.id,epoch:state.navEpoch};
+  if(!rangeInteraction.pointer)rangeInteraction.ignoreNativeChange=false;
+},{passive:true});
+range.addEventListener('touchend',event=>{
+  const session=rangeInteraction.touch;if(!session||!event.changedTouches.length)return;
+  rangeInteraction.touch=null;
+  if(session.epoch!==state.navEpoch||selectedQ()?.id!==session.qid)return;
+  // The first of pointerup/touchend settles; both belong to the same captured question.
+  // Some mobile previews dispatch touchend but never dispatch pointerup.
+  rangeInteraction.pointer=null;
+  const point=event.changedTouches[0];
+  choose(session.qid,pointerValue(point));
+},{passive:true});
+range.addEventListener('touchcancel',()=>{
+  const session=rangeInteraction.touch;rangeInteraction.touch=null;
+  if(!rangeInteraction.pointer&&session)markGestureInterrupted(session);
+},{passive:true});
 range.addEventListener('pointercancel',event=>{
   const session=rangeInteraction.pointer;
   if(!session||session.id!==event.pointerId)return;
@@ -374,11 +415,13 @@ range.addEventListener('blur',()=>{
 // A late native `change` has no settlement authority. Assistive technology may use
 // the explicit "确认本题" control after changing the slider; keyboard keys still commit on keyup.
 range.addEventListener('change',()=>{
-  const session=rangeInteraction.pointer||rangeInteraction.keyboard;
+  const session=rangeInteraction.pointer||rangeInteraction.touch||rangeInteraction.keyboard;
   if(session || rangeInteraction.ignoreNativeChange)return;
-  const q=selectedQ();if(!q)return;
-  rangeInteraction.draft={qid:q.id,epoch:state.navEpoch,value:Number(range.value)};
-  previewRange(Number(range.value));
+  const q=selectedQ(),draft=rangeInteraction.draft;
+  if(!q||!draft||draft.qid!==q.id||draft.epoch!==state.navEpoch)return;
+  // Native range controls that emit input/change but no pointerup must not remain 'skipped'.
+  // Only a draft from this exact question is eligible; late changes from old questions are ignored.
+  choose(q.id,Number(range.value));
 });
 $('confirmSlider').addEventListener('click',()=>{
   const q=selectedQ(),d=rangeInteraction.draft;
@@ -388,6 +431,7 @@ $('confirmSlider').addEventListener('click',()=>{
   // Never reuse a draft from a different question or navigation generation.
   const value=d?.qid===q.id&&d.epoch===state.navEpoch?d.value:Number(range.value);
   rangeInteraction.pointer=null;
+  rangeInteraction.touch=null;
   rangeInteraction.keyboard=null;
   rangeInteraction.draft=null;
   choose(q.id,value);
@@ -645,6 +689,13 @@ function renderReport(target,profile){const p=validateProfile(profile), metrics=
  paragraph(target,`已记录 ${answered} 道答题；其中 ${numeric} 道明确倾向、${Object.values(p.answers).filter(v=>v==='N').length} 道中立、${Object.values(p.answers).filter(v=>v==='X').length} 道不确定。`,'reportNote');
  if(p.profile_type==='roleplay_ai')target.appendChild(elt('div','reportWarning','这是依据角色设定或文本模拟的答卷，不代表 AI 拥有现实身体经历、性体验或现实同意。'));
  if(fast)target.appendChild(elt('div','reportWarning','快速版每维只有两题，只能看初印象。不生成完整人格称号、精确维度百分比、兴趣推荐或匹配指数。'));
+  const numericAnswers=Object.values(p.answers).filter(v=>typeof v==='number');
+  if(numericAnswers.length>=20){
+    const positive=numericAnswers.filter(v=>v>=3).length;
+    if(positive/numericAnswers.length>=.78){
+      target.appendChild(elt('div','reportWarning',`答题风格提示：${numericAnswers.length} 道数字题中有 ${positive} 道选择了较像/非常像（${Math.round(positive/numericAnswers.length*100)}%）。因此多个维度同时高分是当前答案的自然结果。数值是题目平均强度，不是超过多少人的百分位。想看出偏好之间的差别，可以回头重新比较每道题。`));
+    }
+  }
  const completed=Object.values(metrics).filter(v=>v.valid).length;
  if(Object.keys(p.answers).length<targetCount)target.appendChild(elt('div','reportWarning',`这份报告尚未完成：还有 ${targetCount-Object.keys(p.answers).length} 题没有记录答案。可以查看当前数据，但不能当作完整 180 题结论。`));
  if(!fast&&completed<10)target.appendChild(elt('div','reportWarning',`目前仅 ${completed} 个维度达到解读要求，尚缺足够答案；未回答和中立不会被当作低分或默认 50%。`));
@@ -675,7 +726,7 @@ function renderReport(target,profile){const p=validateProfile(profile), metrics=
  const known=LAB_CONTENT.pair_topics.filter(x=>p.topics[x.id]&&p.topics[x.id]!=='UNKNOWN').length;headed(target,'现实边界与条件');paragraph(target,`22 项中已明确记录 ${known} 项。任何倾向分数都不等于现实同意。`);
  const hard=LAB_CONTENT.pair_topics.filter(x=>p.topics[x.id]==='HARD_NO');if(hard.length){const chipbox=elt('div','chips');for(const t of hard)chipbox.appendChild(elt('span','chip warn',t.title+' · 明确拒绝'));target.appendChild(chipbox);}else paragraph(target,'未设置明确拒绝项不代表默认接受。','muted');
  headed(target,'咪嘛小课堂'); const glosses=new Set(['ds','sm','consent']);if(!fast)recommendations(metrics,p).slice(0,3).flatMap(r=>r.glossary_ids||[]).forEach(id=>glosses.add(id));for(const id of [...glosses].slice(0,8)){const node=glossaryCard(id);if(node)target.appendChild(node);}
- paragraph(target,'报告评分规则 v3（v1.0.0）：中立不计分，每维至少需要四个明确数字答案。旧版 MIMA1 只作为历史记录查看，不能参与新版分析或双人匹配。','reportNote');
+ paragraph(target,'报告评分规则 v3（v1.1.0）：得分是0～4按比例换算的选择强度，并非人群百分位；中立不计分，每维至少需要四个明确数字答案。旧版 MIMA1 只作为历史记录查看，不能参与新版分析或双人匹配。','reportNote');
  paragraph(target,'所有内容均为预写文案与确定性评分规则组合，不使用 LLM；不用于诊断，也不代表任何现实互动许可。','reportNote');
  return {scores:metrics,awards:achievements,recs:fast?[]:recommendations(metrics,p)};
 }
@@ -871,6 +922,172 @@ function openFromHash(){try{const raw=location.hash.slice(1);if(raw&&(raw.starts
 $('adult').addEventListener('change',()=>{if($('adult').checked&&location.hash)openFromHash();});
 window.addEventListener('hashchange',openFromHash);
 openFromHash();
+
+
+// v1.1: make starting a truly new attempt explicit, rather than resuming an all-answered run.
+function restartQuiz(){
+  if(!requireAdult())return;
+  if(!storageReadVerified||!topicReadVerified){
+    alert('旧答卷或边界缓存尚未通过读取校验。为了避免覆盖真实数据，请先导出结果或排查浏览器存储。');return;
+  }
+  if(!confirm('重新测试会清空本浏览器当前保存的答案与关系边界！请先下载完整 HTML 报告（含结果码）或复制结果码。确认重新开始吗？'))return;
+  const targetMode=$('welcome').classList.contains('hidden')?state.mode:$('mode').value;
+  cancelAdvance();state.navEpoch++;rangeInteraction.pointer=null;rangeInteraction.touch=null;rangeInteraction.keyboard=null;rangeInteraction.draft=null;
+  const oldAnswers=state.answers,oldTopics=lab.ownTopics;
+  try{
+    // Clear both stores in one controlled action, with rollback on the second write failure.
+    sessionStorage.setItem(storageKey,JSON.stringify({answers:{}}));
+    try{sessionStorage.setItem('MIMA-KINK-LAB:topics:v1','{}');}
+    catch(e){sessionStorage.setItem(storageKey,JSON.stringify({answers:oldAnswers}));throw e;}
+    state.answers={};lab.ownTopics={};storageWritable=true;topicStorageError=false;
+    updateStorageWarning();updateCacheHint();
+    $('ownPngGallery').replaceChildren();$('importedPngGallery').replaceChildren();$('pairPngGallery').replaceChildren();
+    state.mode=targetMode;$('mode').value=targetMode;state.index=0;start();
+  }catch(err){state.answers=oldAnswers;lab.ownTopics=oldTopics;storageFailure(err);alert('浏览器未能安全清空旧记录，因此未开始新测试。请先保存数据并检查存储权限。');}
+}
+$('startFresh').addEventListener('click',restartQuiz);
+$('retakeDone').addEventListener('click',restartQuiz);
+
+function safeFileStem(value){return String(value||'匿名档案').replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').slice(0,28)||'匿名档案';}
+function saveBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return url;}
+function escapedHtml(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function archiveSource(kind){
+ if(kind==='own'){
+  const profile=localProfile();return {title:profile.name+' · 完整个人趣味档案',code:codeFor(profile),root:$('reportInline'),name:profile.name};
+ }
+ if(kind==='imported'){
+  if(!lab.currentImport)throw Error('还没有导入报告。');
+  return {title:lab.currentImport.name+' · 导入结果档案',code:codeFor(lab.currentImport),root:$('importedReport'),name:lab.currentImport.name};
+ }
+ if(kind==='pair'){
+  if(!lab.lastPair?.a||!lab.lastPair?.b||!$('pairReport').textContent.trim())throw Error('请先生成双人匹配报告。');
+  return {title:lab.lastPair.a.name+' × '+lab.lastPair.b.name+' · 双人报告',code:'A: '+codeFor(lab.lastPair.a)+'\nB: '+codeFor(lab.lastPair.b),root:$('pairReport'),name:'双人匹配'};
+ }
+ throw Error('未知报告类型');
+}
+// Cloning a generated report is safe because all user values were inserted using textContent.
+function fullReportClone(root){
+ const clone=root.cloneNode(true);
+ clone.querySelectorAll('details').forEach(d=>{d.open=true;d.setAttribute('open','');});
+ clone.querySelectorAll('button').forEach(btn=>{const tag=document.createElement('span');tag.className='chip';tag.textContent=btn.textContent||'知识标签';btn.replaceWith(tag);});
+ return clone;
+}
+function archiveHtml(src){
+ const sheet=document.querySelector('style').textContent,content=fullReportClone(src.root).outerHTML;
+ return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapedHtml(src.title)} - MIMA DESIRE</title><style>${sheet}\nbody{padding:0;background:#f5f7fa}.archivePage{max-width:860px;margin:auto;padding:24px 17px 70px}.archiveMeta{padding:21px;border-radius:15px;background:#eef4ff;border:1px solid #dce7f8;overflow-wrap:anywhere}.archiveMeta h1{font-size:24px}.archiveCode{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 ui-monospace,Consolas,monospace;background:#f4f7fc;padding:15px;border:1px solid #d8e2ee;border-radius:12px}.archivePage details{display:block}.archivePage details>summary{font-weight:700;cursor:default} @media print{.archivePage{max-width:none;padding:0}body{background:white}.archiveMeta{break-inside:avoid}*{box-shadow:none !important}}</style></head><body><main class="archivePage"><header class="archiveMeta"><div class="brand">♡ MIMA DESIRE · 离线完整报告</div><h1>${escapedHtml(src.title)}</h1><p>此文件是下载时的静态快照，可以离线阅读、打印或通过浏览器保存为 PDF。包含报告全文及结果码；请不要随意公开。</p></header>${content}<section class="archiveMeta"><h2>可重新导入的结果码</h2><div class="archiveCode">${escapedHtml(src.code)}</div><p>本文件不包含在线请求，代码本身不是加密，持有者可读取完整答案和边界。</p></section></main></body></html>`;
+}
+function handleArchiveHtml(kind,statusId){
+ try{const src=archiveSource(kind);const html=archiveHtml(src);saveBlob(new Blob([html],{type:'text/html;charset=utf-8'}),`MIMA_${safeFileStem(src.name)}_完整报告.html`);$(statusId).textContent='已生成完整离线 HTML 报告（包含所有展开的分析及结果码）。请检查浏览器下载记录。';}
+ catch(err){$(statusId).textContent='保存失败：'+err.message;console.error('报告保存失败',err);}
+}
+$('saveOwnHtml').addEventListener('click',()=>handleArchiveHtml('own','ownExportStatus'));
+$('saveImportedHtml').addEventListener('click',()=>handleArchiveHtml('imported','importedExportStatus'));
+$('savePairHtml').addEventListener('click',()=>handleArchiveHtml('pair','pairExportStatus'));
+
+// Render a reliable, native Canvas long image, without html2canvas/CDN/LLM.
+// Text and chart values are extracted from the actual rendered report, not recomputed.
+function imageLines(src){
+ const root=fullReportClone(src.root),out=[];
+ out.push({kind:'title',text:'♡ MIMA DESIRE · 完整档案'});
+ out.push({kind:'h2',text:src.title});
+ out.push({kind:'p',text:'导出时间：'+new Date().toLocaleString('zh-CN')});
+ const blocks=root.querySelectorAll('h2,h3,h4,p,summary,.achCategory,.achName,.barLine,.chip,.reportWarning');
+ for(const el of blocks){
+  if(el.closest('.barLine')!==el&&el.matches('.barLine')===false&&el.closest('.barLine'))continue;
+  if(el.matches('.chip')&&el.closest('.chips')?.querySelectorAll('.chip').length>16)continue;
+  if(el.matches('.reportWarning')&&el.querySelector('p'))continue;
+  if(el.closest('p')&&el.tagName!=='P')continue;
+  const text=(el.matches('.barLine')?(el.querySelector('span')?.textContent||'')+'：'+(el.querySelector('small')?.textContent||''):el.textContent||'').trim();
+  if(!text)continue;
+  const kind=el.matches('h2')?'h2':el.matches('h3,summary')?'h3':el.matches('h4,.achName')?'h4':el.matches('.barLine')?'bar':el.matches('.reportWarning')?'warning':'p';
+  out.push({kind,text});
+ }
+ out.push({kind:'h2',text:'可导入的结果码'});
+ out.push({kind:'code',text:src.code});
+ out.push({kind:'p',text:'提示：结果码可还原私密答案，不是加密。此报告仅供成年人的自愿兴趣探索。'});
+ return out;
+}
+function canvasPages(src){
+ const width=1000,left=52,right=52,maxHeight=7400,bottom=55,top=55;
+ const font={title:'bold 28px sans-serif',h2:'bold 29px sans-serif',h3:'bold 24px sans-serif',h4:'bold 22px sans-serif',p:'19px sans-serif',bar:'19px sans-serif',warning:'19px sans-serif',code:'17px monospace'};
+ const lineHeight={title:44,h2:43,h3:37,h4:34,p:31,bar:48,warning:33,code:26};
+ const measure=document.createElement('canvas').getContext('2d');
+ if(!measure)throw Error('浏览器无法创建 Canvas。请改为保存 HTML。');
+ const flattened=[];
+ for(const item of imageLines(src)){
+  const f=font[item.kind],lh=lineHeight[item.kind];measure.font=f;
+  const limit=width-left-right-(item.kind==='code'?15:0);
+  const lines=[];let row='';
+  for(const char of Array.from(item.text)){
+   if(char==='\n'){lines.push(row);row='';continue;}
+   if(measure.measureText(row+char).width>limit&&row){lines.push(row);row='';}
+   row+=char;
+  }
+  if(row)lines.push(row);
+  if(!lines.length)continue;
+  const gap=item.kind==='h2'?19:item.kind==='h3'?14:7;
+  for(let i=0;i<lines.length;i++)flattened.push({text:lines[i],kind:item.kind,font:f,height:lh,space:i===0?gap:0});
+ }
+ const pages=[];let page=[],height=top;
+ for(const line of flattened){
+  if(page.length&&height+line.space+line.height+bottom>maxHeight){pages.push({lines:page,height:height+bottom});page=[];height=top;}
+  page.push(line);height+=line.space+line.height;
+ }
+ if(page.length)pages.push({lines:page,height:height+bottom});
+ return pages.map((data,idx)=>{
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=Math.ceil(data.height);
+  const ctx=canvas.getContext('2d');if(!ctx)throw Error('浏览器未能创建图片画布。');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+  ctx.fillStyle='#0b57d0';ctx.fillRect(0,0,width,9);
+  let y=top;
+  for(const line of data.lines){
+   y+=line.space+line.height;
+   ctx.font=line.font;ctx.textBaseline='alphabetic';
+   ctx.fillStyle=['title','h2','h3','h4'].includes(line.kind)?'#0b57d0':line.kind==='warning'?'#8b5c20':'#293648';
+   ctx.fillText(line.text,left,y-6);
+   if(line.kind==='bar'){
+     const match=line.text.match(/(\d+)%/);
+     if(match){const percent=Math.max(0,Math.min(100,Number(match[1]))),x=left+470,w=width-right-x;
+       ctx.fillStyle='#e7edf6';ctx.fillRect(x,y-21,w,11);
+       ctx.fillStyle='#0b57d0';ctx.fillRect(x,y-21,w*percent/100,11);
+     }
+   }
+  }
+  ctx.fillStyle='#6b7482';ctx.font='16px sans-serif';ctx.fillText(`MIMA DESIRE · 第 ${idx+1}/${pages.length} 张 · 由本地浏览器生成`,left,canvas.height-23);
+  return canvas;
+ });
+}
+async function handleArchivePng(kind,statusId,galleryId){
+ const status=$(statusId),gallery=$(galleryId);
+ const newUrls=[];
+ try{
+  status.textContent='正在排版长图……';
+  const src=archiveSource(kind),pages=canvasPages(src);
+  // Generate once and show previews: each part is saved with a user gesture (iOS can long-press).
+  const newCards=[];
+  for(let i=0;i<pages.length;i++){
+   const canvas=pages[i];let blob;
+   try{blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));}
+   catch(e){throw Error('PNG 编码失败：'+e.message);}
+   if(!blob)throw Error('当前浏览器无法导出 PNG；可以保存完整 HTML。');
+   const url=URL.createObjectURL(blob);newUrls.push(url);
+   canvas.width=1;canvas.height=1; // Release potentially large pixel buffers before the next preview.
+   const fig=document.createElement('figure'),img=document.createElement('img');img.src=url;img.alt='报告长图第 '+(i+1)+' 页';img.loading='lazy';
+   const caption=document.createElement('figcaption');caption.textContent=`报告长图 ${i+1}/${pages.length} · 包含完整分析及结果码（最后一张）。`;
+   const a=document.createElement('a');a.href=url;a.download=`MIMA_${safeFileStem(src.name)}_长图_${i+1}of${pages.length}.png`;a.textContent='保存第 '+(i+1)+' 张 PNG ↓';
+   const opener=document.createElement('a');opener.href=url;opener.target='_blank';opener.rel='noopener';opener.title='点击查看长图原尺寸';opener.appendChild(img);
+   fig.append(opener,caption,a);newCards.push(fig);
+  }
+  // Commit UI only after every part rendered; the previous preview stays on failure.
+  const oldUrls=[...gallery.querySelectorAll('a[href^=\"blob:\"]')].map(a=>a.href);
+  gallery.replaceChildren(...newCards);
+  oldUrls.forEach(url=>URL.revokeObjectURL(url));
+  status.textContent=pages.length===1?'已生成一张完整 PNG 长图；可长按图片保存。':`报告较长，已自动分成 ${pages.length} 张长图以避免手机画布超限；请逐张长按保存（全部包含完整报告）。另可保存单文件 HTML 阅读完整内容。`;
+ }catch(err){newUrls.forEach(url=>URL.revokeObjectURL(url));status.textContent='图片导出失败：'+err.message+'。可以使用“保存完整报告 HTML”。';console.error('报告长图导出失败',err);}
+}
+$('saveOwnPng').addEventListener('click',()=>handleArchivePng('own','ownExportStatus','ownPngGallery'));
+$('saveImportedPng').addEventListener('click',()=>handleArchivePng('imported','importedExportStatus','importedPngGallery'));
+$('savePairPng').addEventListener('click',()=>handleArchivePng('pair','pairExportStatus','pairPngGallery'));
 
 </script>
 </body></html>
