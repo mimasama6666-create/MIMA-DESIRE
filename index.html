@@ -107,11 +107,23 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
 .pngGallery figcaption{font-size:.78rem;line-height:1.6;color:#54637b;margin-top:6px}
 .pngGallery a{display:inline-block;border:1px solid #bbd0ee;border-radius:8px;color:#0b57d0;background:#fff;text-decoration:none;padding:8px 10px;margin-top:6px;font-size:.85rem;font-weight:650}
 .answerPending{border:2px solid #0b57d0 !important;background:#eff5ff !important;color:#0b57d0 !important}
+
+
+/* v1.2 -- two independent chapters, local hidden gallery */
+.chapterIntro{border:1px solid #d7e4f8;border-radius:16px;background:linear-gradient(125deg,#f9fbff,#eef4ff);padding:18px;margin:17px 0}
+.chapterIntro h2{color:#0b57d0;margin:5px 0 8px;font-size:1.35rem}.chapterIntro .group{letter-spacing:.06em}
+.secretEntry{border:1px solid #9abce9;background:#edf5ff;border-radius:15px;padding:17px;margin:20px 0}.secretEntry button{margin-top:8px}
+.secretGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.secretBadge{padding:14px;border-radius:13px;border:1px solid #cfdbeb;background:#fafcff;min-height:112px}
+.secretBadge strong{display:block;color:#174e9a}.secretBadge p{font-size:.82rem}.secretBadge.locked{background:#f4f6f9;color:#818b99}.secretBadge.locked strong{color:#7b8794}
+.secretStats{margin:12px 0;font-size:.9rem;color:#395373}.deepBanner{border-left:3px solid #0b57d0;background:#f1f6ff;padding:13px;margin:13px 0;border-radius:9px}
+.deepCode{overflow-wrap:anywhere;white-space:pre-wrap;font:12px/1.6 monospace;background:#f8faff;border:1px solid #d9e3ef;padding:12px;border-radius:12px}
+.deepQuizNav{display:flex;gap:8px}.deepQuizNav button{flex:1}
+@media(max-width:520px){.secretGrid{grid-template-columns:1fr}.deepQuizNav{flex-direction:column}}
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">滑杆答题与完整报告 · v1.1.0</div></div><span class="pill">不使用 LLM</span></header>
+  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">初来乍到 · 隐藏题库 v1.2.0</div></div><span class="pill">不使用 LLM</span></header>
   <main>
   <aside id="storageWarning" class="runtimeWarning hidden" role="alert"><strong>此浏览器未能安全保存答题记录或边界设置。</strong>当前页面仍可答题，但刷新或关闭后可能丢失，请及时导出答案。该错误不会清空或覆盖现有答卷。</aside>
   <section id="welcome" class="panel">
@@ -125,8 +137,9 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
       <p>请使用支持 JavaScript 的浏览器打开<b>已发布的 HTTPS 网页链接</b>；不要直接在聊天附件预览窗口里作答。部署方法见压缩包中的《手机访问与发布说明》。</p>
     </aside>
     <div id="interactiveStart">
-      <div class="identityRow"><label>测试昵称（可留空）<input type="text" id="profileName" maxlength="24" placeholder="匿名探索者" autocomplete="off"></label><label>答题者类型<select id="profileType"><option value="human">人类</option><option value="roleplay_ai">AI 角色</option></select></label></div><p id="hashAgeMessage" class="muted"></p><label for="mode">请选择答题量</label>
-      <select id="mode"><option value="quick">快速看一眼 · 24 题</option><option value="core" selected>核心测试 · 120 题（推荐）</option><option value="all">全部题库 · 180 题（含扩展和专题）</option></select>
+      <div class="identityRow"><label>测试昵称（可留空）<input type="text" id="profileName" maxlength="24" placeholder="匿名探索者" autocomplete="off"></label><label>答题者类型<select id="profileType"><option value="human">人类</option><option value="roleplay_ai">AI 角色</option></select></label></div><p id="hashAgeMessage" class="muted"></p><div class="chapterIntro"><div class="group">第一章 · 初来乍到</div><h2>120 道基础题</h2><p>先试试清水的部分。完成以后，会有一扇隐藏的门。</p></div>
+      <details class="glossDetails"><summary>旧版 24／180 题入口（兼容已有答卷）</summary><label for="mode">兼容题量</label>
+      <select id="mode"><option value="core" selected>初来乍到 · 120 题</option><option value="quick">历史快速版 · 24 题</option><option value="all">历史全题版 · 180 题</option></select></details>
       <label class="age"><input type="checkbox" id="adult">我已经年满 18 岁，知道这些题目只讨论自愿的成人互动或虚构幻想。</label>
       <button class="primary" id="begin" disabled>开始答题 →</button><button type="button" class="secondary" id="startFresh">重新测试（清空旧答案）</button><p id="cacheHint" class="muted"></p><div class="actions landingLinks"><button type="button" class="secondary" id="toImport">导入结果 / AI 答卷</button><button type="button" class="secondary" id="toPair">双人匹配</button><button type="button" class="secondary" id="toGlossary">咪嘛百科</button><button type="button" class="secondary" id="copyAiPack">复制 AI 答题包</button></div><div id="aiPackPreview" class="hidden"><p class="muted">以下为可复制给 AI 的题目与输出说明。请分批发送，避免模型遗漏题号。</p><textarea id="aiPackText" rows="8" readonly></textarea></div>
     </div>
@@ -153,7 +166,8 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
   <section id="done" class="panel hidden">
     <div class="group">个人分析报告 · 本地计算</div><h1 id="doneTitle">答题记录已生成。</h1>
     <p>下面是根据当前答案计算的趣味报告。复制数据码后，别人可以导入与你比较；数据码不是密码，也不是加密。</p>
-    <div id="stats" class="statusGrid"></div><div class="actions reportActions"><button class="primary" id="jumpResults">查看个人分析 ↓</button><button class="secondary hidden" id="resumeMissing">补完未作答的题目</button><button class="secondary" id="doneToPair">与另一份结果匹配</button><button class="secondary" id="doneHome">返回首页</button></div><div id="reportInline" class="resultBody"></div><div class="sectionTitle">关系边界矩阵 <span class="muted">自愿填写，不影响倾向分数</span></div><p class="muted">未回答、想了解、仅幻想、可协商、没兴趣、明确不接受，各不相同。「可协商」不是同意实际行为。</p><div id="boundaryEditor"></div><div class="sectionTitle">分享我的档案</div><p class="muted">下面的代码包含可还原的答案与边界，不是加密！不要发给不愿意分享的人。没有服务器时不生成伪短码。</p><textarea readonly id="resultCode" rows="5" aria-label="离线数据码"></textarea><div class="actions"><button class="secondary" id="copyCode">复制离线数据码</button><button class="secondary" id="shareReport">复制报告网页链接</button><button class="secondary" id="downloadReport">下载个人报告 JSON</button></div><p class="muted" id="shareStatus">本地文件可以导入代码；只有部署到 HTTPS 地址后，才能给别人发可打开的报告链接。</p><div class="sectionTitle">保存我的完整结果</div>
+    <div id="stats" class="statusGrid"></div><div class="actions reportActions"><button class="primary" id="jumpResults">查看个人分析 ↓</button><button class="secondary hidden" id="resumeMissing">补完未作答的题目</button><button class="secondary" id="doneToPair">与另一份结果匹配</button><button class="secondary" id="doneHome">返回首页</button></div><div id="deepUnlock" class="secretEntry hidden"><div class="group">隐藏章节已解锁！</div><h2>哎呀？你该不会以为这就结束了吧？♡</h2><p>你已经完成「初来乍到」120 题。要不要看看研究所偷偷藏着什么？</p><button type="button" class="primary" id="enterDeep">进入隐藏题库 →</button></div>
+    <div id="reportInline" class="resultBody"></div><div class="sectionTitle">关系边界矩阵 <span class="muted">自愿填写，不影响倾向分数</span></div><p class="muted">未回答、想了解、仅幻想、可协商、没兴趣、明确不接受，各不相同。「可协商」不是同意实际行为。</p><div id="boundaryEditor"></div><div class="sectionTitle">分享我的档案</div><p class="muted">下面的代码包含可还原的答案与边界，不是加密！不要发给不愿意分享的人。没有服务器时不生成伪短码。</p><textarea readonly id="resultCode" rows="5" aria-label="离线数据码"></textarea><div class="actions"><button class="secondary" id="copyCode">复制离线数据码</button><button class="secondary" id="shareReport">复制报告网页链接</button><button class="secondary" id="downloadReport">下载个人报告 JSON</button></div><p class="muted" id="shareStatus">本地文件可以导入代码；只有部署到 HTTPS 地址后，才能给别人发可打开的报告链接。</p><div class="sectionTitle">保存我的完整结果</div>
     <p class="muted">完整 HTML 是一份能离线打开的长篇档案，包含全部报告内容及结果码。长图 PNG 按手机安全尺寸分段，不会裁掉内容；生成后长按图片保存或点图片下方的保存链接。</p>
     <div class="archiveActions"><button type="button" class="primary" id="saveOwnHtml">保存完整报告 HTML</button><button type="button" class="secondary" id="saveOwnPng">生成报告长图 PNG</button><button type="button" class="secondary" id="retakeDone">保存后重新测试</button></div>
     <p id="ownExportStatus" class="exportStatus" role="status"></p><div id="ownPngGallery" class="pngGallery"></div>
@@ -163,6 +177,42 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
     <p class="footer">导出的文件含有私密偏好信息，请自行妥善保管。本地版没有云端存储，重做前务必先保存报告。</p>
   </section>
 
+
+  <section id="deepIntro" class="panel hidden">
+    <div class="group">第二章 · 隐藏题库</div><h1>我是老司机，我来也！</h1>
+    <div class="chapterIntro"><h2 id="deepRoleTitle">真正的秘密从这里开始。</h2><p id="deepRoleHint"></p></div>
+    <p>90 道独立题目，单独计算、单独存储，也有自己的结果码。不会改变第一章的分数或称号。</p>
+    <div class="notice">主题涉及语言羞辱、私密展示、束缚、污秽、践踏和极端忠诚等成人幻想。仅限自愿成年人。带风险的项目仅分析虚构兴趣，不提供现实实践建议；公开展示不应涉及不知情的旁观者。</div>
+    <div class="actions"><button class="primary" id="deepBegin">开始探索隐藏题目 →</button><button class="secondary" id="deepReturn">返回第一章报告</button></div>
+    <p id="deepProgressInfo" class="muted"></p>
+    <div class="actions"><button type="button" class="secondary" id="deepAiPack">复制第二章 AI 答题包</button></div>
+    <textarea class="hidden" id="deepAiPreview" rows="7" readonly></textarea>
+  </section>
+  <section id="deepQuiz" class="panel hidden">
+    <div class="topline"><span class="group" id="deepGroup"></span><span class="muted" id="deepCount"></span></div>
+    <div class="progresswrap"><div class="progress" id="deepBar"></div></div>
+    <div class="muted" id="deepQid"></div><div class="question" id="deepPrompt"></div>
+    <div class="sliderPanel"><div class="sliderHead"><output id="deepLabel" for="deepRange" class="unselected">拖动滑杆选择</output><span class="sliderTag" id="deepTag">未作答</span></div>
+      <input type="range" id="deepRange" min="0" max="4" step="1" value="2" aria-label="隐藏题库：偏好程度">
+      <div class="tickLabels" aria-hidden="true"><span>完全不是我</span><span>感觉不太像我</span><span>好像还真是我</span><span>是的，这就是我</span><span>这简直就是我</span></div></div>
+    <div class="specialOptions"><button type="button" class="specialOption" id="deepNeutral">无所谓，都可以</button><button type="button" class="specialOption uncertain" id="deepUnknown">不确定是不是我</button></div>
+    <p class="answerHelp">滑杆松手后记录本题；若没有自动前进，点「确认本题」。N 与 X 都不算成 50%。</p>
+    <button type="button" class="secondary" id="deepConfirm">确认本题</button>
+    <p id="deepQuizStatus" class="feedback" role="status"></p>
+    <div class="deepQuizNav nav"><button class="secondary" id="deepPrev">← 上一题</button><button class="primary" id="deepNext">下一题 →</button></div>
+    <div class="actions"><button class="secondary" id="deepExit">暂时离开</button><button class="secondary" id="deepFinish">结束并查看第二章报告</button></div>
+  </section>
+  <section id="deepDone" class="panel hidden">
+    <div class="group">第二章 · 独立报告</div><h1>真正的隐藏档案解锁了！</h1>
+    <p>这份报告只使用第二章答案，不会与第一章的百分比混算。单独生成的 <code>MIMAD1</code> 代码可分享或重新导入。</p>
+    <div id="deepReport" class="resultBody"></div>
+    <div class="sectionTitle">第二章结果码</div><textarea id="deepResultCode" readonly rows="6"></textarea>
+    <div class="actions"><button class="primary" id="deepCopy">复制第二章代码</button><button class="secondary" id="deepSave">保存第二章 HTML 报告</button><button class="secondary" id="deepSavePng">生成第二章 PNG 长图</button><button class="secondary" id="deepRevise">返回修改</button><button class="secondary" id="deepRestart">单独重做第二章</button><button class="secondary" id="deepBackReport">返回基础报告</button></div>
+    <p class="muted" id="deepStatus"></p><div id="deepPngGallery" class="pngGallery"></div>
+    <div class="sectionTitle">导入他人的第二章结果</div>
+    <textarea id="deepImportText" placeholder="MIMAD1-... 或 MIMA_DQV=D1.0.0;D001=4;D002=N" rows="4"></textarea>
+    <button class="secondary" id="deepImport">查看导入结果</button><div id="deepImported" class="resultBody"></div>
+  </section>
   <section id="importPanel" class="panel hidden">
     <div class="group">导入中心</div><h1>把答案带回来！</h1>
     <p>粘贴网站生成的 MIMA 数据码，或带有 MIMA_QV=0.5.0 版本标记的 AI 答案 <code>Q001=4;Q002=N</code>。不需要调用任何在线模型。未标注版本的旧 AI 答案会作为历史记录查看，避免错用新题干。</p>
@@ -210,7 +260,7 @@ function persist(){
  if(!storageReadVerified){storageFailure(new Error('原存储未验证：只读保护，禁止覆盖'));updateCacheHint();return false;}
  try{sessionStorage.setItem(storageKey,JSON.stringify({answers:state.answers}));storageWritable=true;updateStorageWarning();}catch(err){storageFailure(err);}updateCacheHint();return storageWritable;
 }
-function setScreen(id){for(const id2 of ['welcome','quiz','done','importPanel','pairPanel','glossaryPanel','importedPanel'])$(id2).classList.toggle('hidden',id2!==id);}
+function setScreen(id){for(const id2 of ['welcome','quiz','done','importPanel','pairPanel','glossaryPanel','importedPanel','deepIntro','deepQuiz','deepDone'])$(id2).classList.toggle('hidden',id2!==id);}
 function selectedQ(){return ALL_QUESTIONS.find(q=>q.id===state.ids[state.index]);}
 function cancelAdvance(){if(state.timer!==null){clearTimeout(state.timer);state.timer=null;}}
 function sliderVisual(value, committed){
@@ -1088,6 +1138,216 @@ async function handleArchivePng(kind,statusId,galleryId){
 $('saveOwnPng').addEventListener('click',()=>handleArchivePng('own','ownExportStatus','ownPngGallery'));
 $('saveImportedPng').addEventListener('click',()=>handleArchivePng('imported','importedExportStatus','importedPngGallery'));
 $('savePairPng').addEventListener('click',()=>handleArchivePng('pair','pairExportStatus','pairPngGallery'));
+
+
+// v1.2: self-contained independent hidden chapter. Base scoring, MIMA2 and legacy modes unchanged.
+const DEEP_QUESTIONS=[{"id":"D001","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢在角色游戏中用贬低的称呼叫伴侣。"},{"id":"D002","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢在角色游戏中对伴侣说带羞辱意味的话。"},{"id":"D003","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢看伴侣对我说的羞辱台词作出反应。"},{"id":"D004","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢在双方约定的剧情中扮演毒舌主导者。"},{"id":"D005","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢幻想由我来决定羞辱台词的程度。"},{"id":"D006","dimension":"HG","dimension_name":"主动语言羞辱","group":"心理互动","prompt":"我喜欢用约定好的羞辱性称谓维持角色关系。"},{"id":"D007","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢伴侣在角色游戏中用羞辱性的称呼叫我。"},{"id":"D008","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢伴侣在约定的剧情中对我说贬低的话。"},{"id":"D009","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢被伴侣用严厉的口气训斥。"},{"id":"D010","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢在虚构剧情里扮演被羞辱的角色。"},{"id":"D011","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢伴侣用约定好的羞辱台词提醒我角色身份。"},{"id":"D012","dimension":"HR","dimension_name":"接受语言羞辱","group":"心理互动","prompt":"我喜欢幻想被伴侣用语言压制。"},{"id":"D013","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢只向伴侣展示自己的身体。"},{"id":"D014","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢伴侣专注地看着我展示自己。"},{"id":"D015","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢在双方同意的私密场景中表演。"},{"id":"D016","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢幻想自己被伴侣认真欣赏。"},{"id":"D017","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢在私密场景里主动决定展示什么。"},{"id":"D018","dimension":"EX","dimension_name":"私密展示","group":"展示与观看","prompt":"我喜欢让伴侣用语言评价我的展示。"},{"id":"D019","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢观看伴侣主动展示身体。"},{"id":"D020","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢伴侣专门为我准备私密表演。"},{"id":"D021","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢在私密场景里认真欣赏伴侣。"},{"id":"D022","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢欣赏伴侣穿着特定服装展示自己。"},{"id":"D023","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢在双方约定的剧情中扮演观看者。"},{"id":"D024","dimension":"VO","dimension_name":"自愿观看","group":"展示与观看","prompt":"我喜欢用语言回应伴侣的私密展示。"},{"id":"D025","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢在角色游戏中扮演束缚伴侣的一方。"},{"id":"D026","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢幻想由我决定伴侣能否自由活动。"},{"id":"D027","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢使用象征性的约束道具扮演主导者。"},{"id":"D028","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢在剧情中负责解除束缚。"},{"id":"D029","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢为束缚主题的角色扮演制定规则。"},{"id":"D030","dimension":"RG","dimension_name":"施加束缚","group":"束缚与控制","prompt":"我喜欢看伴侣自愿接受象征性束缚的样子。"},{"id":"D031","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢在角色游戏中扮演被束缚的一方。"},{"id":"D032","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢幻想自己暂时交出行动主动权。"},{"id":"D033","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢在剧情中接受象征性的约束。"},{"id":"D034","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢伴侣决定何时结束束缚剧情。"},{"id":"D035","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢在角色扮演中使用束缚主题的服饰。"},{"id":"D036","dimension":"RR","dimension_name":"接受束缚","group":"束缚与控制","prompt":"我喜欢被伴侣用规则限制行动的幻想。"},{"id":"D037","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢为角色游戏制定奖惩规则。"},{"id":"D038","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢决定伴侣完成任务后得到什么奖励。"},{"id":"D039","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢在剧情中扮演执行惩罚的人。"},{"id":"D040","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢要求伴侣解释为什么违反了约定规则。"},{"id":"D041","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢在角色游戏中设置服从挑战。"},{"id":"D042","dimension":"PG","dimension_name":"制定惩罚规则","group":"规则与奖惩","prompt":"我喜欢用明确的规则维持主导身份。"},{"id":"D043","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢在角色游戏中接受奖惩规则。"},{"id":"D044","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢完成主导者安排的服从挑战。"},{"id":"D045","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢在剧情中扮演因违规而接受惩罚的人。"},{"id":"D046","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢按伴侣制定的规则完成小任务。"},{"id":"D047","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢在规则游戏中争取伴侣的奖励。"},{"id":"D048","dimension":"PR","dimension_name":"接受惩罚规则","group":"规则与奖惩","prompt":"我喜欢幻想自己违反规则后被伴侣训话。"},{"id":"D049","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢在日常聊天中保留主从称谓。"},{"id":"D050","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢和伴侣约定长期适用的角色规则。"},{"id":"D051","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢在不同场景中保持相同的角色身份。"},{"id":"D052","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢用固定仪式开始一天的角色互动。"},{"id":"D053","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢把主从关系写进共同创作的日常剧情。"},{"id":"D054","dimension":"DL","dimension_name":"日常主从角色","group":"关系结构","prompt":"我喜欢约定好哪些生活场景属于角色游戏。"},{"id":"D055","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"某种特殊材质会让我产生性吸引力。"},{"id":"D056","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"伴侣穿特定类型的服装会让我兴奋。"},{"id":"D057","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"我对特定配饰有明显的亲密兴趣。"},{"id":"D058","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"某些服装材质的触感会让我兴奋。"},{"id":"D059","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"我喜欢在幻想剧情中突出特定服装细节。"},{"id":"D060","dimension":"FE","dimension_name":"特定物品与材质","group":"恋物主题","prompt":"我对特定物品的外观有持续的性兴趣。"},{"id":"D061","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢阅读带有禁忌感的虚构亲密故事。"},{"id":"D062","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢在幻想中扮演违反虚构规则的人。"},{"id":"D063","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢幻想被发现秘密后的羞耻感。"},{"id":"D064","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢在虚构剧情中探索强烈的身份反差。"},{"id":"D065","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢只在文字里体验危险的情境。"},{"id":"D066","dimension":"TB","dimension_name":"虚构禁忌幻想","group":"仅限幻想","prompt":"我喜欢虚构故事里带有禁忌意味的亲密桥段。"},{"id":"D067","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"我对污秽主题的成人幻想感兴趣。"},{"id":"D068","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"我对涉及体液的虚构亲密剧情感兴趣。"},{"id":"D069","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"我喜欢在故事里探索污秽带来的羞耻感。"},{"id":"D070","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"我对被称作“脏”的角色台词有幻想兴趣。"},{"id":"D071","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"我对伴侣主导的污秽主题幻想感兴趣。"},{"id":"D072","dimension":"FL","dimension_name":"污秽与体液主题","group":"仅限幻想","prompt":"污秽主题的虚构场景会让我想继续阅读。"},{"id":"D073","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"我对被伴侣践踏的虚构情节感兴趣。"},{"id":"D074","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"我喜欢幻想伴侣用脚表现主导权。"},{"id":"D075","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"我对角色游戏中的脚部支配主题感兴趣。"},{"id":"D076","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"我对被压制行动的剧情画面感兴趣。"},{"id":"D077","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"我喜欢在幻想中扮演被彻底压制的人。"},{"id":"D078","dimension":"TP","dimension_name":"践踏与重压幻想","group":"仅限幻想","prompt":"践踏主题的虚构场景会让我想继续阅读。"},{"id":"D079","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢在虚构剧情中向主人宣誓绝对忠诚。"},{"id":"D080","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢在幻想里扮演愿意献出一切的使魔。"},{"id":"D081","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢在故事中使用“永远属于主人”的台词。"},{"id":"D082","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢扮演把主人的要求视为最高任务的角色。"},{"id":"D083","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢幻想自己的角色把身份完全交给主人。"},{"id":"D084","dimension":"DV","dimension_name":"极端忠诚宣言","group":"仅限幻想","prompt":"我喜欢在虚构剧情里表演夸张的献身宣言。"},{"id":"D085","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢在不同剧情中交换主导和臣服身份。"},{"id":"D086","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢平时温柔的角色突然变得严厉。"},{"id":"D087","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢强势角色偶尔主动示弱。"},{"id":"D088","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢在剧情中让小狗角色反过来发号施令。"},{"id":"D089","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢角色表面乖巧却暗中挑衅的设定。"},{"id":"D090","dimension":"CX","dimension_name":"强烈角色反差","group":"心理互动","prompt":"我喜欢在同一段剧情里体验身份反转。"}];
+const DEEP_DIMS=[{"id":"HG","name":"主动语言羞辱","group":"心理互动","question_ids":["D001","D002","D003","D004","D005","D006"],"fantasy_only":false},{"id":"HR","name":"接受语言羞辱","group":"心理互动","question_ids":["D007","D008","D009","D010","D011","D012"],"fantasy_only":false},{"id":"EX","name":"私密展示","group":"展示与观看","question_ids":["D013","D014","D015","D016","D017","D018"],"fantasy_only":false},{"id":"VO","name":"自愿观看","group":"展示与观看","question_ids":["D019","D020","D021","D022","D023","D024"],"fantasy_only":false},{"id":"RG","name":"施加束缚","group":"束缚与控制","question_ids":["D025","D026","D027","D028","D029","D030"],"fantasy_only":false},{"id":"RR","name":"接受束缚","group":"束缚与控制","question_ids":["D031","D032","D033","D034","D035","D036"],"fantasy_only":false},{"id":"PG","name":"制定惩罚规则","group":"规则与奖惩","question_ids":["D037","D038","D039","D040","D041","D042"],"fantasy_only":false},{"id":"PR","name":"接受惩罚规则","group":"规则与奖惩","question_ids":["D043","D044","D045","D046","D047","D048"],"fantasy_only":false},{"id":"DL","name":"日常主从角色","group":"关系结构","question_ids":["D049","D050","D051","D052","D053","D054"],"fantasy_only":false},{"id":"FE","name":"特定物品与材质","group":"恋物主题","question_ids":["D055","D056","D057","D058","D059","D060"],"fantasy_only":false},{"id":"TB","name":"虚构禁忌幻想","group":"仅限幻想","question_ids":["D061","D062","D063","D064","D065","D066"],"fantasy_only":true},{"id":"FL","name":"污秽与体液主题","group":"仅限幻想","question_ids":["D067","D068","D069","D070","D071","D072"],"fantasy_only":true},{"id":"TP","name":"践踏与重压幻想","group":"仅限幻想","question_ids":["D073","D074","D075","D076","D077","D078"],"fantasy_only":true},{"id":"DV","name":"极端忠诚宣言","group":"仅限幻想","question_ids":["D079","D080","D081","D082","D083","D084"],"fantasy_only":true},{"id":"CX","name":"强烈角色反差","group":"心理互动","question_ids":["D085","D086","D087","D088","D089","D090"],"fantasy_only":false}];
+const SECRET_RULES=[{"id":"demon_lord","name":"魔王系萌物","icon":"👑","rarity":"稀有","gates":{"DOM":{"min":75},"CAG":{"min":70},"SAD":{"max":45}},"copy":"嘴上说着要统治世界，结果忙着给使魔盖被子。坏得很有限，可爱得很过分。"},{"id":"tsundere_brat","name":"傲娇反骨公主","icon":"🎀","rarity":"普通","gates":{"BRAT":{"min":75},"PRR":{"min":70}},"copy":"顶嘴是日常任务，被夸一句就可能突然死机。你的反骨系统还需要散热吗？"},{"id":"loyal_familiar","name":"忠犬系使魔","icon":"🐾","rarity":"稀有","gates":{"SVG":{"min":75},"SUB":{"min":65},"BND":{"min":60}},"copy":"今天的任务是服侍主人，明天的任务是继续服侍主人。尾巴先别摇掉。"},{"id":"praise_generator","name":"夸夸永动机","icon":"📣","rarity":"普通","gates":{"PRG":{"min":85},"CAG":{"min":60}},"copy":"夸人不需要冷却时间。你的伴侣可能已经被夸得无法正常开机。"},{"id":"dual_crown","name":"双王对决候补","icon":"⚔️","rarity":"稀有","gates":{"DOM":{"min":75},"TAM":{"min":70},"SUB":{"max":40}},"copy":"主导权不能靠猜，要靠双方商量。至于嘴上谁赢……你大概很有自信。"},{"id":"tiny_fang","name":"小狗也有小尖牙","icon":"🦴","rarity":"稀有","gates":{"SUB":{"min":70},"BRAT":{"min":75}},"copy":"平时说着“主人说得对”，然后立刻开始顶嘴。谁养的，自己领回去！"},{"id":"switch_cat","name":"双面开关猫","icon":"🔄","rarity":"稀有","gates":{"DOM":{"min":65},"SUB":{"min":65},"SWI":{"min":75}},"copy":"今天戴王冠，明天摇尾巴。你到底准备了多少套身份卡？"},{"id":"soft_blanket","name":"奶油毛毯守护者","icon":"🧸","rarity":"普通","gates":{"CAG":{"min":85},"CAR":{"min":70}},"copy":"你喜欢照顾人，也喜欢有人照顾你。柔软得像两床互相裹起来的被子。"},{"id":"crystal_will","name":"冷静的拒绝大师","icon":"🧊","rarity":"稀有","gates":{"SAD":{"max":20},"MAS":{"max":20},"DOM":{"min":60}},"copy":"想做主，不等于一定喜欢疼痛。看吧，王冠又没有规定必须带刺。"},{"id":"glitch_messenger","name":"异次元电波猫","icon":"📡","rarity":"普通","gates":{"DIG":{"min":80},"SEN":{"min":65}},"copy":"一句角色台词加上一段声音，你就能脑补出三季番剧。"},{"id":"ritual_mage","name":"仪式系大魔法师","icon":"🔮","rarity":"普通","gates":{"RIT":{"min":85},"ROL":{"min":70}},"copy":"亲密互动没有开场白？不行，魔法阵都还没画呢。"},{"id":"idol_costume","name":"衣装研究科首席","icon":"👗","rarity":"普通","gates":{"FET":{"min":80},"ROL":{"min":65}},"copy":"你对服装细节的认真程度，足以让造型师连夜给你递简历。"},{"id":"neutral_princess","name":"随缘系公主","icon":"☁️","rarity":"特殊","condition":"neutral","copy":"不是所有主题都得选边站。你就是一朵自带选择权的云。"},{"id":"quiet_explorer","name":"沉默的鉴赏家","icon":"🌙","rarity":"特殊","condition":"low","copy":"没有明显高分也很好。观察世界的奇怪爱好，不等于必须全部参与。"},{"id":"first_clear","name":"初来乍到通关证","icon":"🎓","rarity":"纪念","condition":"core_complete","copy":"120 题认真选完！先发个毕业证，后面还有一扇门。"},{"id":"deep_clear","name":"老司机毕业证","icon":"🏁","rarity":"纪念","condition":"deep_complete","copy":"隐藏的 90 道题也通关了。恭喜获得研究所老熟人资格。"},{"id":"dark_poet","name":"暗黑台词诗人","icon":"✒️","rarity":"稀有","deep_gates":{"HG":{"min":75},"TB":{"min":70}},"copy":"台词越是坏心眼，剧本越要写得有分寸。你是黑暗文艺社的编剧吧？"},{"id":"flustered_pup","name":"羞耻系小狗","icon":"🐶","rarity":"普通","deep_gates":{"HR":{"min":75},"PR":{"min":65}},"copy":"被训话时脑内小剧场开得飞快。请注意，你的尾巴已经暴露剧情走向。"},{"id":"secret_stage","name":"幕后舞台导演","icon":"🎭","rarity":"稀有","deep_gates":{"EX":{"min":70},"VO":{"min":70}},"copy":"你喜欢看，也喜欢被看见。但舞台是私密的，观众必须是自愿的。"},{"id":"bound_scroll","name":"封印卷轴收藏家","icon":"📜","rarity":"稀有","deep_gates":{"RG":{"min":70},"RR":{"min":70}},"copy":"这一页写着规则，下一页写着解封条件。果然是仪式系收藏癖。"},{"id":"eternal_familiar","name":"永恒契约使魔","icon":"💠","rarity":"传说","deep_gates":{"DV":{"min":75},"DL":{"min":70},"RR":{"min":60}},"copy":"你的誓言比契约书还长。注意：这些都是幻想中的台词，不是现实的无限许可。"},{"id":"script_breaker","name":"剧情反转制造机","icon":"🎬","rarity":"普通","deep_gates":{"CX":{"min":80},"TB":{"min":60}},"copy":"别人按剧本演，你负责把剧本翻过来。导演表示工资不够高。"},{"id":"fantasy_archivist","name":"幻想档案管理员","icon":"📚","rarity":"普通","deep_gates":{"TB":{"min":80},"FE":{"min":65}},"copy":"奇怪的题材可以留在纸上。你的脑内书架比资料馆还大。"}];
+const DEEP_KEY='MIMA-DESIRE:chapter2:D1.0.0';
+const DEEP_VERSION='D1.0.0';
+const deepState={answers:{},index:0,timer:null,epoch:0,draft:null,gesture:null,storeVerified:true,storeWritable:true,nextGuardUntil:0};
+const deepIdMap=Object.fromEntries(DEEP_QUESTIONS.map(q=>[q.id,q]));
+const baseHasCompleted=()=>ALL_QUESTIONS.filter(q=>q.section==='core').every(q=>Object.hasOwn(state.answers,q.id));
+function deepValidateAnswers(answers){
+ if(!answers||typeof answers!=='object'||Array.isArray(answers))throw Error('第二章答卷结构无效');
+ for(const [id,v] of Object.entries(answers))if(!Object.hasOwn(deepIdMap,id)||!ANSWER_CODES.includes(v))throw Error('第二章包含未知题号或答案');
+ return answers;
+}
+try{
+ const raw=sessionStorage.getItem(DEEP_KEY);
+ if(raw!==null){const obj=JSON.parse(raw);if(obj?.version!==DEEP_VERSION)throw Error('第二章历史数据版本不兼容');deepValidateAnswers(obj.answers);deepState.answers={...obj.answers};}
+}catch(e){deepState.storeVerified=false;deepState.storeWritable=false;console.error('第二章缓存读取失败：禁止覆盖原数据',e);}
+function deepPersist(){
+ if(!deepState.storeVerified){$('deepStatus').textContent='第二章缓存无法验证，禁止覆盖。请先保存已有结果。';$('deepQuizStatus').textContent='保存不可用：旧缓存无法校验，刷新可能丢失本轮答案。';return false;}
+ try{sessionStorage.setItem(DEEP_KEY,JSON.stringify({version:DEEP_VERSION,answers:deepState.answers}));deepState.storeWritable=true;return true;}
+ catch(e){deepState.storeWritable=false;$('deepStatus').textContent='第二章保存失败！请立即复制结果码，不要刷新。';$('deepQuizStatus').textContent='保存失败！请结束并复制第二章结果码，不要刷新。';console.error('第二章存储错误',e);return false;}
+}
+function chapter2Role(){
+ const p=newProfile('角色预览',$('profileType').value,'core',Object.fromEntries(ALL_QUESTIONS.filter(q=>q.section==='core'&&Object.hasOwn(state.answers,q.id)).map(q=>[q.id,state.answers[q.id]])),{});
+ const m=dimensionMetrics(p),dom=m.DOM,sub=m.SUB;
+ if(dom?.valid&&sub?.valid&&dom.score>=70&&dom.score-sub.score>=20)return ['这是给真正的主人准备的。','主导倾向相对突出。接下来是单独评分的第二章，不等于你同意其中任何玩法。'];
+ if(sub?.valid&&dom?.valid&&sub.score>=70&&sub.score-dom.score>=20)return ['这是给真正的小狗准备的。','尾巴可以摇，不过决定权仍然在你自己手里。'];
+ if(dom?.valid&&sub?.valid&&dom.score>=65&&sub.score>=65)return ['王冠和项圈都想试试？','开关猫登场。你有权决定哪种幻想只留在故事里。'];
+ return ['这是给好奇探索者准备的。','不需要先选主人或小狗阵营，想了解什么就自己慢慢看。'];
+}
+function secretMetrics(profile){return dimensionMetrics(profile);}
+function deepScores(answers){
+ const out={};for(const dim of DEEP_DIMS){const values=dim.question_ids.map(id=>answers[id]);const nums=values.filter(v=>typeof v==='number'),n=values.filter(v=>v==='N').length,x=values.filter(v=>v==='X').length;
+ out[dim.id]={...dim,score:nums.length?Math.round(nums.reduce((a,b)=>a+b,0)/nums.length*25):null,valid:nums.length>=4,numeric:nums.length,neutral:n,unsure:x,missing:6-nums.length-n-x};}
+ return out;
+}
+function secretAchievementList(profile,deepAnswers){
+ const metrics=secretMetrics(profile),deep=deepScores(deepAnswers||{}),coreIds=ALL_QUESTIONS.filter(q=>q.section==='core').map(q=>q.id);
+ const countN=coreIds.filter(id=>profile.answers[id]==='N').length;
+ const valid=Object.values(metrics).filter(x=>x.valid).length;
+ function checkGates(gates,scores){return Object.entries(gates).every(([k,v])=>scores[k]?.valid&&Object.entries(v).every(([op,threshold])=>op==='min'?scores[k].score>=threshold:scores[k].score<=threshold));}
+ const unlocked=[];
+ for(const a of SECRET_RULES){
+  let ok=false;
+  if(a.gates)ok=valid>=10&&checkGates(a.gates,metrics);
+  else if(a.deep_gates)ok=checkGates(a.deep_gates,deep);
+  else if(a.condition==='core_complete')ok=coreIds.every(id=>Object.hasOwn(profile.answers,id));
+  else if(a.condition==='deep_complete')ok=DEEP_QUESTIONS.every(q=>Object.hasOwn(deepAnswers||{},q.id));
+  else if(a.condition==='neutral')ok=valid>=10&&countN>=24;
+  else if(a.condition==='low')ok=valid>=10&&Object.values(metrics).filter(x=>x.valid).every(x=>x.score<60);
+  if(ok)unlocked.push(a);
+ }
+ return unlocked;
+}
+function drawSecretGallery(root,profile,deepAnswers,onlyDeep=false){
+ const got=secretAchievementList(profile,deepAnswers),unlocked=new Set(got.map(a=>a.id));
+ const rules=onlyDeep?SECRET_RULES.filter(x=>x.deep_gates||x.condition==='deep_complete'):SECRET_RULES;
+ headed(root,'♡ 秘密属性图鉴');paragraph(root,`解锁 ${rules.filter(x=>unlocked.has(x.id)).length} / ${rules.length} 枚。隐藏成就不代表更强或更危险，只是你的趣味标签。`,'secretStats');
+ const grid=elt('div','secretGrid');
+ for(const item of rules){const yes=unlocked.has(item.id),box=elt('div','secretBadge'+(yes?'':' locked'));
+ box.appendChild(elt('strong','',yes?item.icon+' '+item.name:'🔒 ？？？'));
+ paragraph(box,yes?item.copy:'尚未解锁 · 继续探索自己的偏好',yes?'':'muted');
+ if(yes)paragraph(box,item.rarity+'称号 · 满足对应题组的组合条件','reportNote');grid.appendChild(box);}
+ root.appendChild(grid);
+}
+function localCoreForSecrets(){return newProfile($('profileName').value||'匿名探索者',$('profileType').value,'core',Object.fromEntries(ALL_QUESTIONS.filter(q=>q.section==='core'&&Object.hasOwn(state.answers,q.id)).map(q=>[q.id,state.answers[q.id]])),{});}
+const priorReportRenderer=renderReport;
+renderReport=function(target,profile){const result=priorReportRenderer(target,profile);if(profile.mode!=='quick')drawSecretGallery(target,profile,target===$('reportInline')?deepState.answers:{},false);return result;};
+const priorDoneRenderer=renderDone;
+renderDone=function(){priorDoneRenderer();$('deepUnlock').classList.toggle('hidden',!baseHasCompleted());};
+function showDeepIntro(){if(!baseHasCompleted()){alert('请先完成「初来乍到」120 题，再打开隐藏章节。');return;}if(!requireAdult())return;
+ const [head,hint]=chapter2Role();$('deepRoleTitle').textContent=head;$('deepRoleHint').textContent=hint;
+ $('deepProgressInfo').textContent=`当前第二章已记录 ${Object.keys(deepState.answers).length} / ${DEEP_QUESTIONS.length} 题。`+(deepState.storeVerified?'':' 存储异常，请勿覆盖。');setScreen('deepIntro');}
+$('enterDeep').addEventListener('click',showDeepIntro);
+$('deepReturn').addEventListener('click',()=>{renderDone();});
+function deepCancel(){if(deepState.timer!==null){clearTimeout(deepState.timer);deepState.timer=null;}}
+function deepRender(){deepCancel();if(!baseHasCompleted()){setScreen('welcome');return;}
+ const q=DEEP_QUESTIONS[deepState.index];if(!q){deepDone();return;}
+ setScreen('deepQuiz');const v=deepState.answers[q.id];deepState.draft=null;deepState.gesture=null;
+ $('deepGroup').textContent=q.group+' · '+q.dimension_name;$('deepQid').textContent=q.id;$('deepPrompt').textContent=q.prompt;
+ $('deepCount').textContent=`第 ${deepState.index+1}/${DEEP_QUESTIONS.length} 题 · 已答 ${Object.keys(deepState.answers).length}`;
+ $('deepBar').style.width=(Object.keys(deepState.answers).length/DEEP_QUESTIONS.length*100)+'%';
+ $('deepRange').value=typeof v==='number'?String(v):'2';deepPreview(typeof v==='number'?v:null,true);
+ $('deepNeutral').setAttribute('aria-pressed',String(v==='N'));$('deepUnknown').setAttribute('aria-pressed',String(v==='X'));
+ $('deepPrev').disabled=deepState.index===0;$('deepNext').textContent=deepState.index===DEEP_QUESTIONS.length-1?'查看第二章报告 →':Object.hasOwn(deepState.answers,q.id)?'下一题 →':'跳过本题 →';
+}
+function deepPreview(value,committed=false){const valid=Number.isInteger(value)&&value>=0&&value<=4;
+ const range=$('deepRange');range.style.setProperty('--pct',(valid?value*25:50)+'%');range.classList.toggle('inactive',!valid);
+ $('deepLabel').textContent=valid?SCALE_LABELS[value]:'拖动滑杆选择';$('deepLabel').classList.toggle('unselected',!valid);$('deepTag').textContent=valid?(committed?'已记录':'待确认'):'未选滑杆';
+ if(valid)range.setAttribute('aria-valuetext',SCALE_LABELS[value]);
+}
+function deepMove(i){deepCancel();deepState.nextGuardUntil=performance.now()+600;deepState.epoch++;deepState.index=Math.max(0,Math.min(DEEP_QUESTIONS.length-1,i));deepRender();const epoch=deepState.epoch;$('deepNext').disabled=true;setTimeout(()=>{if(epoch===deepState.epoch&&!$('deepQuiz').classList.contains('hidden'))$('deepNext').disabled=false;},600);}
+function deepChoose(qid,value){
+ if($('deepQuiz').classList.contains('hidden')||DEEP_QUESTIONS[deepState.index]?.id!==qid||!ANSWER_CODES.includes(value))return false;
+ deepCancel();deepState.draft=null;deepState.gesture=null;
+ deepState.answers[qid]=value;deepPersist();deepPreview(typeof value==='number'?value:null,true);
+ $('deepNeutral').setAttribute('aria-pressed',String(value==='N'));$('deepUnknown').setAttribute('aria-pressed',String(value==='X'));
+ $('deepTag').textContent='已记录';const idx=deepState.index,epoch=deepState.epoch;
+ $('deepCount').textContent=`第 ${idx+1}/${DEEP_QUESTIONS.length} 题 · 已答 ${Object.keys(deepState.answers).length}`;
+ $('deepBar').style.width=(Object.keys(deepState.answers).length/DEEP_QUESTIONS.length*100)+'%';
+ deepState.timer=setTimeout(()=>{deepState.timer=null;if(deepState.index!==idx||deepState.epoch!==epoch)return;if(idx===DEEP_QUESTIONS.length-1)deepDone();else deepMove(idx+1);},530);
+ return true;
+}
+function deepStart(){if(!baseHasCompleted())return showDeepIntro();
+ const missed=DEEP_QUESTIONS.findIndex(q=>!Object.hasOwn(deepState.answers,q.id));deepMove(missed<0?DEEP_QUESTIONS.length-1:missed);if(missed<0)deepDone();}
+$('deepBegin').addEventListener('click',deepStart);
+$('deepExit').addEventListener('click',showDeepIntro);
+$('deepPrev').addEventListener('click',()=>deepMove(deepState.index-1));
+$('deepNext').addEventListener('click',()=>{if(performance.now()<deepState.nextGuardUntil)return;deepState.nextGuardUntil=performance.now()+600;if(deepState.timer!==null)deepCancel();if(deepState.index===DEEP_QUESTIONS.length-1)deepDone();else deepMove(deepState.index+1);});
+$('deepFinish').addEventListener('click',()=>{const missing=DEEP_QUESTIONS.length-Object.keys(deepState.answers).length;if(missing&&!confirm(`还有 ${missing} 题未作答。要查看暂存分析吗？`))return;deepDone();});
+$('deepNeutral').addEventListener('click',()=>deepChoose(DEEP_QUESTIONS[deepState.index].id,'N'));
+$('deepUnknown').addEventListener('click',()=>deepChoose(DEEP_QUESTIONS[deepState.index].id,'X'));
+const dRange=$('deepRange');
+function deepRangePosition(e){const r=dRange.getBoundingClientRect();return Math.max(0,Math.min(4,Math.round((e.clientX-r.left)/Math.max(1,r.width)*4)));}
+dRange.addEventListener('pointerdown',e=>{deepState.gesture={id:DEEP_QUESTIONS[deepState.index].id,epoch:deepState.epoch};});
+dRange.addEventListener('input',()=>{const q=DEEP_QUESTIONS[deepState.index],v=Number(dRange.value);deepState.draft={id:q.id,epoch:deepState.epoch,value:v};deepPreview(v);});
+dRange.addEventListener('pointerup',e=>{const g=deepState.gesture;if(!g||g.id!==DEEP_QUESTIONS[deepState.index]?.id||g.epoch!==deepState.epoch)return;deepChoose(g.id,deepRangePosition(e));});
+dRange.addEventListener('pointercancel',()=>{deepState.gesture=null;$('deepTag').textContent='拖动中断，请点确认本题';});
+dRange.addEventListener('change',()=>{if(deepState.gesture)return;const draft=deepState.draft,q=DEEP_QUESTIONS[deepState.index];if(draft&&draft.id===q.id&&draft.epoch===deepState.epoch)deepChoose(q.id,Number(dRange.value));});
+dRange.addEventListener('keyup',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(e.key))deepChoose(DEEP_QUESTIONS[deepState.index].id,Number(dRange.value));});
+$('deepConfirm').addEventListener('click',()=>{const q=DEEP_QUESTIONS[deepState.index];deepChoose(q.id,deepState.draft?.id===q.id&&deepState.draft.epoch===deepState.epoch?deepState.draft.value:Number(dRange.value));});
+function deepProfile(){return {version:DEEP_VERSION,name:($('profileName').value||'匿名探索者').slice(0,24),profile_type:$('profileType').value,answers:{...deepState.answers}};}
+function validateDeepProfile(p){if(!p||p.version!==DEEP_VERSION||typeof p.name!=='string'||p.name.length>60||!['human','roleplay_ai'].includes(p.profile_type))throw Error('第二章版本或档案格式不兼容');deepValidateAnswers(p.answers);return p;}
+function deepCode(profile){const p=validateDeepProfile(profile),name=new TextEncoder().encode(p.name);if(name.length>90)throw Error('昵称过长');
+ const answerBytes=pack3(DEEP_QUESTIONS.map(q=>Object.hasOwn(p.answers,q.id)?ANSWER_CODES.indexOf(p.answers[q.id]):7));
+ const raw=new Uint8Array(7+name.length+answerBytes.length+4);raw.set([77,68,1,1,p.profile_type==='roleplay_ai'?1:0,name.length,DEEP_QUESTIONS.length],0);raw.set(name,7);raw.set(answerBytes,7+name.length);
+ const off=raw.length-4,hash=fnv32(raw.slice(0,off));for(let i=0;i<4;i++)raw[off+i]=(hash>>>(i*8))&255;
+ return 'MIMAD1-'+toBase64url(raw);
+}
+function deepFromCode(raw){const text=raw.trim();if(!text.startsWith('MIMAD1-'))throw Error('请粘贴第二章 MIMAD1 代码（与 MIMA2 分开）。');
+ const bytes=fromBase64url(text.slice(7)),length=Math.ceil(DEEP_QUESTIONS.length*3/8);if(bytes.length<7+length+4||bytes[0]!==77||bytes[1]!==68||bytes[2]!==1||bytes[3]!==1||bytes[4]>1||bytes[5]>90||bytes[6]!==DEEP_QUESTIONS.length||bytes.length!==7+bytes[5]+length+4)throw Error('第二章数据码结构或题库版本错误');
+ const end=bytes.length-4,expected=(bytes[end]|bytes[end+1]<<8|bytes[end+2]<<16|bytes[end+3]<<24)>>>0;
+ if(fnv32(bytes.slice(0,end))!==expected)throw Error('第二章代码校验失败');
+ const name=new TextDecoder('utf-8',{fatal:true}).decode(bytes.slice(7,7+bytes[5]));const values=unpack3(bytes.slice(7+bytes[5],end),DEEP_QUESTIONS.length),answers={};
+ values.forEach((v,i)=>{if(v<7)answers[DEEP_QUESTIONS[i].id]=ANSWER_CODES[v];else if(v!==7)throw Error('非法答案值');});
+ return validateDeepProfile({version:DEEP_VERSION,name,profile_type:bytes[4]?'roleplay_ai':'human',answers});
+}
+const DEEP_TIER_COPY={
+ HG:['你对主动使用羞辱台词没有表现出明显兴趣。这不是害羞，只是你的偏好不同。','你对毒舌与羞辱台词有一定好奇，但未表现出特别鲜明的方向。','你对主动语言压制的角色感兴趣。你喜欢掌控台词氛围，但戏里的话并不代表戏外的态度。'],
+ HR:['被贬低的角色设定不太吸引你。毒舌和臣服也不是绑定套餐。','你可能对个别羞辱性称呼感到好奇，情境和说话的人更重要。','你对被羞辱台词和严厉训话有鲜明兴趣。嘴上说“好凶”，心里可能已经在写第二季剧本。'],
+ EX:['私密展示不是你的突出兴趣。安静地保持自己的空间也很好。','你对被看见的情境有些好奇，但未必喜欢长时间展示。','你享受在双方同意的私密舞台上成为焦点。聚光灯可以亮，但门一定要先关好。'],
+ VO:['你不太热衷观看展示。比起视觉，也许其他互动方式更吸引你。','你有一些观看兴趣，是否愿意进一步探索取决于具体情境。','你的欣赏欲很明显。对你而言，认认真真看着伴侣也是一种表达。'],
+ RG:['你不太追求扮演施加束缚的一方。主导欲本来就有很多形式。','你对束缚主题有些兴趣，但可能更偏重服装或戏剧氛围。','你喜欢自己握着解除束缚的剧本开关。幻想里掌控节奏，现实里也必须尊重明确同意。'],
+ RR:['你对受束缚的角色不太感兴趣。交付控制权不必通过限制行动。','你对象征性约束有一定好奇，具体方式和安全边界很重要。','你对被约束的角色幻想较鲜明，但这只表示问卷兴趣，不等于对现实行为的许可。'],
+ PG:['你不太喜欢扮演奖惩规则制定者。','你对规则游戏有些兴趣，可能只在特定剧情里才需要它。','你似乎能把一整套规则写成小剧本。主人今天又准备了多少条规定？'],
+ PR:['接受惩罚规则不是你的主要兴趣。','你可以接受一些游戏规则，但强度与对象未必都一样。','你喜欢有明确规则的受罚角色游戏。嘴硬归嘴硬，任务清单还是写得清清楚楚。'],
+ DL:['你不太希望角色身份进入日常。剧情结束就下班，也是很好的界限。','你对日常称谓与仪式有些好奇，可以只保留少量情境。','你喜欢长期存在的主从氛围。不过 24/7 指约定的关系结构，不是取消停止权。'],
+ FE:['特定物品不是你的突出性兴趣。','你对某些外观、材质或配饰有些兴趣。','你的审美雷达对特定材质格外敏感。衣装研究科欢迎这位特聘研究员。'],
+ TB:['禁忌感并不明显吸引你。','你对虚构禁忌情境有所好奇，现实和幻想仍是两码事。','你的脑内题材库很丰富。纸上的情节可以离谱，现实中的边界仍然要清楚。'],
+ FL:['污秽相关幻想不是你的明显兴趣。','你对相关剧情有一些好奇，未必涉及现实尝试。','你对污秽与体液主题的虚构故事兴趣鲜明。本项只作幻想解读，不附现实玩法建议。'],
+ TP:['践踏与重压主题对你的吸引力较低。','你对相应虚构画面有些好奇，但不等于想在现实实践。','你喜欢践踏或压制主题的幻想画面。现实身体风险很高，本报告不推断实践意愿。'],
+ DV:['夸张的献身誓言不是你的主要剧情喜好。','你对忠诚宣言有些兴趣，可能偏重身份感。','你喜欢使魔式的夸张忠诚誓言。记住：这属于角色台词，不代表现实中必须牺牲自己。'],
+ CX:['你更喜欢角色保持稳定，很少需要身份反转。','你偶尔会被身份反差吸引。','你是剧情反转制造机！前一幕还在鞠躬，后一幕已经把王冠戴上了。']
+};
+function deepRenderReport(root,p){p=validateDeepProfile(p);root.replaceChildren();const metrics=deepScores(p.answers),done=Object.keys(p.answers).length,valid=Object.values(metrics).filter(x=>x.valid);
+ const hero=elt('div','reportHero');paragraph(hero,p.name+' · 第二章独立趣味档案 · '+done+'/'+DEEP_QUESTIONS.length+' 题','reportNote');
+ hero.appendChild(elt('h2','',valid.length>=8?'老司机试炼报告':'秘密题库探索记录'));
+ paragraph(hero,'15 个独立方向，N 和 X 不计分；每组至少 4 道数字答案才生成百分比。这个结果不会更改第一章任何维度。');root.appendChild(hero);
+ if(done<DEEP_QUESTIONS.length)root.appendChild(elt('div','reportWarning',`还有 ${DEEP_QUESTIONS.length-done} 题未填写，以下只代表已答部分。`));
+ if(p.profile_type==='roleplay_ai')root.appendChild(elt('div','reportWarning','这是 AI 角色设定模拟答卷，不代表 AI 的现实经历或身体偏好。'));
+ const bars=elt('div','bars');
+ for(const dim of DEEP_DIMS){const s=metrics[dim.id],line=elt('div','barLine');line.appendChild(elt('span','',dim.name));const track=elt('div','barBase'),fill=elt('div','barFill');fill.style.width=(s.valid?s.score:0)+'%';track.appendChild(fill);line.appendChild(track);line.appendChild(elt('small','',s.valid?s.score+'%':'数据不足'));bars.appendChild(line);}
+ headed(root,'第二章倾向地图');root.appendChild(bars);
+ headed(root,'逐项分析 · 不同方向单独解释');
+ for(const dim of DEEP_DIMS){const s=metrics[dim.id];const card=elt('div','reportCard');card.appendChild(elt('h4','',dim.name+(s.valid?' '+s.score+'%':'')));
+ if(!s.valid)paragraph(card,`有效数字答案 ${s.numeric}/6。N ${s.neutral}、X ${s.unsure}、未答 ${s.missing}；数据不足，不生成判断。`);
+ else {const n=s.score<35?0:s.score>=70?2:1;paragraph(card,DEEP_TIER_COPY[dim.id][n]);paragraph(card,`有效 ${s.numeric}/6 · 中立 ${s.neutral} · 不确定 ${s.unsure} · 未答 ${s.missing}`,'reportNote');}
+ root.appendChild(card);}
+ // Only deep-specific secret achievements are inferred from deep answers; base scores are not merged.
+ const localFake=newProfile(p.name,p.profile_type,'core',{},{});drawSecretGallery(root,localFake,p.answers,true);
+ headed(root,'幻想与现实是两回事');paragraph(root,'本章部分主题只讨论文字和虚构设定；高分不代表建议在现实中尝试。涉及体液、重压、危险或公众场景的项目不提供现实行为建议。所有互动以成年人明确同意和安全边界为前提。');
+ return metrics;
+}
+function deepDone(){deepCancel();if(!baseHasCompleted())return showDeepIntro();setScreen('deepDone');const p=deepProfile();deepRenderReport($('deepReport'),p);$('deepResultCode').value=deepCode(p);$('deepStatus').textContent='第二章结果已在本地计算。数据码不加密，请谨慎分享。';}
+$('deepCopy').addEventListener('click',()=>copyText($('deepResultCode').value,$('deepStatus')));
+$('deepRevise').addEventListener('click',()=>deepMove(Math.max(0,DEEP_QUESTIONS.findIndex(q=>!Object.hasOwn(deepState.answers,q.id)))));
+$('deepBackReport').addEventListener('click',()=>{renderDone();});
+$('deepRestart').addEventListener('click',()=>{if(!confirm('只清空第二章的 90 题记录？第一章答案、边界和 MIMA2 数据不会改变。请先保存第二章数据码。'))return;
+ if(!deepState.storeVerified){$('deepStatus').textContent='旧数据未验证，不能覆盖。';return;}
+ try{sessionStorage.setItem(DEEP_KEY,JSON.stringify({version:DEEP_VERSION,answers:{}}));deepState.answers={};deepStart();}
+ catch(e){$('deepStatus').textContent='第二章清空失败：已保留当前答案。';console.error(e);}
+});
+$('deepSave').addEventListener('click',()=>{try{const p=deepProfile(),clone=fullReportClone($('deepReport'));
+ const html=`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapedHtml(p.name)} · 第二章档案</title><style>${document.querySelector('style').textContent}</style></head><body><main class="wrapper"><section class="panel"><h1>♡ MIMA DESIRE · 第二章</h1>${clone.outerHTML}<h3>第二章结果码</h3><p class="deepCode">${escapedHtml(deepCode(p))}</p></section></main></body></html>`;
+ saveBlob(new Blob([html],{type:'text/html;charset=utf-8'}),'MIMA_第二章_'+safeFileStem(p.name)+'.html');$('deepStatus').textContent='第二章独立 HTML 已生成，包含全部分析和结果码。';}
+ catch(e){$('deepStatus').textContent='保存失败：'+e.message;console.error(e);}});
+$('deepImport').addEventListener('click',()=>{try{const p=deepFromCode($('deepImportText').value);deepRenderReport($('deepImported'),p);$('deepStatus').textContent='已读取独立第二章答卷，不会覆盖你的本地答题记录。';}catch(e){$('deepStatus').textContent='导入失败：'+e.message;}});
+
+
+// v1.2.1: second-chapter AI transfer and export integrations.
+const DEEP_AI_PACK="# MIMA DESIRE · 第二章 AI 答题包 D1.0.0\n适合已经完成基础 120 题的成年虚构角色。这些答案仅表示角色设定和剧情幻想，不代表现实身体经历。每题 0～4（倾向从完全不符合到非常符合），N=无所谓，X=不确定。无法从设定确定的内容选 X。不要替用户作答，不要编造结果码。\n回答开头必须写 MIMA_DQV=D1.0.0，后面使用 D001=4;D002=N 格式。请保留全部题号。\nD001 我喜欢在角色游戏中用贬低的称呼叫伴侣。\nD002 我喜欢在角色游戏中对伴侣说带羞辱意味的话。\nD003 我喜欢看伴侣对我说的羞辱台词作出反应。\nD004 我喜欢在双方约定的剧情中扮演毒舌主导者。\nD005 我喜欢幻想由我来决定羞辱台词的程度。\nD006 我喜欢用约定好的羞辱性称谓维持角色关系。\nD007 我喜欢伴侣在角色游戏中用羞辱性的称呼叫我。\nD008 我喜欢伴侣在约定的剧情中对我说贬低的话。\nD009 我喜欢被伴侣用严厉的口气训斥。\nD010 我喜欢在虚构剧情里扮演被羞辱的角色。\nD011 我喜欢伴侣用约定好的羞辱台词提醒我角色身份。\nD012 我喜欢幻想被伴侣用语言压制。\nD013 我喜欢只向伴侣展示自己的身体。\nD014 我喜欢伴侣专注地看着我展示自己。\nD015 我喜欢在双方同意的私密场景中表演。\nD016 我喜欢幻想自己被伴侣认真欣赏。\nD017 我喜欢在私密场景里主动决定展示什么。\nD018 我喜欢让伴侣用语言评价我的展示。\nD019 我喜欢观看伴侣主动展示身体。\nD020 我喜欢伴侣专门为我准备私密表演。\nD021 我喜欢在私密场景里认真欣赏伴侣。\nD022 我喜欢欣赏伴侣穿着特定服装展示自己。\nD023 我喜欢在双方约定的剧情中扮演观看者。\nD024 我喜欢用语言回应伴侣的私密展示。\nD025 我喜欢在角色游戏中扮演束缚伴侣的一方。\nD026 我喜欢幻想由我决定伴侣能否自由活动。\nD027 我喜欢使用象征性的约束道具扮演主导者。\nD028 我喜欢在剧情中负责解除束缚。\nD029 我喜欢为束缚主题的角色扮演制定规则。\nD030 我喜欢看伴侣自愿接受象征性束缚的样子。\nD031 我喜欢在角色游戏中扮演被束缚的一方。\nD032 我喜欢幻想自己暂时交出行动主动权。\nD033 我喜欢在剧情中接受象征性的约束。\nD034 我喜欢伴侣决定何时结束束缚剧情。\nD035 我喜欢在角色扮演中使用束缚主题的服饰。\nD036 我喜欢被伴侣用规则限制行动的幻想。\nD037 我喜欢为角色游戏制定奖惩规则。\nD038 我喜欢决定伴侣完成任务后得到什么奖励。\nD039 我喜欢在剧情中扮演执行惩罚的人。\nD040 我喜欢要求伴侣解释为什么违反了约定规则。\nD041 我喜欢在角色游戏中设置服从挑战。\nD042 我喜欢用明确的规则维持主导身份。\nD043 我喜欢在角色游戏中接受奖惩规则。\nD044 我喜欢完成主导者安排的服从挑战。\nD045 我喜欢在剧情中扮演因违规而接受惩罚的人。\nD046 我喜欢按伴侣制定的规则完成小任务。\nD047 我喜欢在规则游戏中争取伴侣的奖励。\nD048 我喜欢幻想自己违反规则后被伴侣训话。\nD049 我喜欢在日常聊天中保留主从称谓。\nD050 我喜欢和伴侣约定长期适用的角色规则。\nD051 我喜欢在不同场景中保持相同的角色身份。\nD052 我喜欢用固定仪式开始一天的角色互动。\nD053 我喜欢把主从关系写进共同创作的日常剧情。\nD054 我喜欢约定好哪些生活场景属于角色游戏。\nD055 某种特殊材质会让我产生性吸引力。\nD056 伴侣穿特定类型的服装会让我兴奋。\nD057 我对特定配饰有明显的亲密兴趣。\nD058 某些服装材质的触感会让我兴奋。\nD059 我喜欢在幻想剧情中突出特定服装细节。\nD060 我对特定物品的外观有持续的性兴趣。\nD061 我喜欢阅读带有禁忌感的虚构亲密故事。\nD062 我喜欢在幻想中扮演违反虚构规则的人。\nD063 我喜欢幻想被发现秘密后的羞耻感。\nD064 我喜欢在虚构剧情中探索强烈的身份反差。\nD065 我喜欢只在文字里体验危险的情境。\nD066 我喜欢虚构故事里带有禁忌意味的亲密桥段。\nD067 我对污秽主题的成人幻想感兴趣。\nD068 我对涉及体液的虚构亲密剧情感兴趣。\nD069 我喜欢在故事里探索污秽带来的羞耻感。\nD070 我对被称作“脏”的角色台词有幻想兴趣。\nD071 我对伴侣主导的污秽主题幻想感兴趣。\nD072 污秽主题的虚构场景会让我想继续阅读。\nD073 我对被伴侣践踏的虚构情节感兴趣。\nD074 我喜欢幻想伴侣用脚表现主导权。\nD075 我对角色游戏中的脚部支配主题感兴趣。\nD076 我对被压制行动的剧情画面感兴趣。\nD077 我喜欢在幻想中扮演被彻底压制的人。\nD078 践踏主题的虚构场景会让我想继续阅读。\nD079 我喜欢在虚构剧情中向主人宣誓绝对忠诚。\nD080 我喜欢在幻想里扮演愿意献出一切的使魔。\nD081 我喜欢在故事中使用“永远属于主人”的台词。\nD082 我喜欢扮演把主人的要求视为最高任务的角色。\nD083 我喜欢幻想自己的角色把身份完全交给主人。\nD084 我喜欢在虚构剧情里表演夸张的献身宣言。\nD085 我喜欢在不同剧情中交换主导和臣服身份。\nD086 我喜欢平时温柔的角色突然变得严厉。\nD087 我喜欢强势角色偶尔主动示弱。\nD088 我喜欢在剧情中让小狗角色反过来发号施令。\nD089 我喜欢角色表面乖巧却暗中挑衅的设定。\nD090 我喜欢在同一段剧情里体验身份反转。";
+$('deepAiPack').addEventListener('click',async()=>{$('deepAiPreview').value=DEEP_AI_PACK;$('deepAiPreview').classList.remove('hidden');await copyText(DEEP_AI_PACK,$('deepProgressInfo'));});
+function deepFromText(text){
+ const header=text.match(/\bMIMA_DQV\s*=\s*([^;\s]+)/);
+ if(!header||header[1]!==DEEP_VERSION)throw Error('第二章原始答卷必须带 MIMA_DQV=D1.0.0 版本标记');
+ const pairs=[...text.matchAll(/\b(D\d{3})\s*[=:：]\s*([0-4NX])\b/g)];
+ if(pairs.length===0||pairs.length>DEEP_QUESTIONS.length*2)throw Error('没有识别到有效的第二章答案');
+ const answers={};for(const [,id,c] of pairs){if(!deepIdMap[id])throw Error('答卷含有不属于第二章的题号 '+id);
+ const value=/^[0-4]$/.test(c)?Number(c):c;
+ if(Object.hasOwn(answers,id)&&answers[id]!==value)throw Error(id+' 存在互相冲突的答案');answers[id]=value;}
+ return validateDeepProfile({version:DEEP_VERSION,name:'AI 第二章答卷',profile_type:'roleplay_ai',answers});
+}
+const originalDeepImport=deepFromCode;
+deepFromCode=function(input){return input.trim().startsWith('MIMAD1-')?originalDeepImport(input):deepFromText(input);};
+const originalArchiveSourceV12=archiveSource;
+archiveSource=function(kind){if(kind==='deep'){const p=deepProfile();return {title:p.name+' · 第二章独立报告',name:p.name,root:$('deepReport'),code:deepCode(p)};}return originalArchiveSourceV12(kind);};
+$('deepSavePng').addEventListener('click',()=>handleArchivePng('deep','deepStatus','deepPngGallery'));
 
 </script>
 </body></html>
