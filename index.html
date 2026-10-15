@@ -119,11 +119,18 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
 .deepCode{overflow-wrap:anywhere;white-space:pre-wrap;font:12px/1.6 monospace;background:#f8faff;border:1px solid #d9e3ef;padding:12px;border-radius:12px}
 .deepQuizNav{display:flex;gap:8px}.deepQuizNav button{flex:1}
 @media(max-width:520px){.secretGrid{grid-template-columns:1fr}.deepQuizNav{flex-direction:column}}
+.homeCodeBox{margin:20px 0 16px;padding:17px;background:#f7faff;border:1px solid #d8e4f5;border-radius:15px}
+.homeCodeBox h2{font-size:1.25rem;margin:6px 0}.homeCodeBox textarea{width:100%;min-height:75px}
+.pngGallery img{height:auto;max-height:none;object-fit:contain;object-position:center;cursor:default;-webkit-touch-callout:default;user-select:auto;-webkit-user-select:auto}
+.pngGallery figure{overflow:hidden}.qqPngHint{color:#174e9a;font-size:.82rem;line-height:1.65}
+.rawAnswerList{margin-top:12px;max-height:580px;overflow-y:auto;border:1px solid #dbe4f2;border-radius:11px;background:#fff}
+.rawAnswerRow{padding:10px 12px;border-bottom:1px solid #e8edf5;display:flex;flex-direction:column;gap:3px;font-size:.87rem}
+.rawAnswerRow strong{color:#0b57d0}.rawAnswerRow span{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">初来乍到 · 隐藏题库 v1.2.0</div></div><span class="pill">不使用 LLM</span></header>
+  <header class="hdr"><div><div class="brand">♡ MIMA KINK LAB</div><div class="sub">初来乍到 · 隐藏题库 v1.2.2</div></div><span class="pill">不使用 LLM</span></header>
   <main>
   <aside id="storageWarning" class="runtimeWarning hidden" role="alert"><strong>此浏览器未能安全保存答题记录或边界设置。</strong>当前页面仍可答题，但刷新或关闭后可能丢失，请及时导出答案。该错误不会清空或覆盖现有答卷。</aside>
   <section id="welcome" class="panel">
@@ -141,6 +148,14 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
       <details class="glossDetails"><summary>旧版 24／180 题入口（兼容已有答卷）</summary><label for="mode">兼容题量</label>
       <select id="mode"><option value="core" selected>初来乍到 · 120 题</option><option value="quick">历史快速版 · 24 题</option><option value="all">历史全题版 · 180 题</option></select></details>
       <label class="age"><input type="checkbox" id="adult">我已经年满 18 岁，知道这些题目只讨论自愿的成人互动或虚构幻想。</label>
+      <section class="homeCodeBox" aria-labelledby="homeCodeTitle">
+        <div class="group">朋友的测试结果</div><h2 id="homeCodeTitle">有结果码？直接来看！</h2>
+        <p class="muted">第一章 MIMA2 / 历史 MIMA1、第二章 MIMAD1 都可以。只读取对方分享的档案，不会覆盖自己的答案。</p>
+        <label class="fieldLabel" for="homeCodeInput">粘贴结果码（两章自动识别）</label>
+        <textarea id="homeCodeInput" rows="3" placeholder="MIMA2-... 或 MIMAD1-..." spellcheck="false" autocomplete="off"></textarea>
+        <div class="actions"><button type="button" class="secondary" id="homeCodeView">查看这份档案 →</button></div>
+        <p id="homeCodeFeedback" class="feedback" role="status"></p>
+      </section>
       <button class="primary" id="begin" disabled>开始答题 →</button><button type="button" class="secondary" id="startFresh">重新测试（清空旧答案）</button><p id="cacheHint" class="muted"></p><div class="actions landingLinks"><button type="button" class="secondary" id="toImport">导入结果 / AI 答卷</button><button type="button" class="secondary" id="toPair">双人匹配</button><button type="button" class="secondary" id="toGlossary">咪嘛百科</button><button type="button" class="secondary" id="copyAiPack">复制 AI 答题包</button></div><div id="aiPackPreview" class="hidden"><p class="muted">以下为可复制给 AI 的题目与输出说明。请分批发送，避免模型遗漏题号。</p><textarea id="aiPackText" rows="8" readonly></textarea></div>
     </div>
     <p class="footer">滑杆表示 0～4 的倾向程度；N 表示无所谓，X 表示不确定。所有分析仅供成年人的趣味探索。</p>
@@ -213,6 +228,16 @@ textarea{border:1px solid #d2dbe6;border-radius:11px;background:#fafbfd;color:#2
     <textarea id="deepImportText" placeholder="MIMAD1-... 或 MIMA_DQV=D1.0.0;D001=4;D002=N" rows="4"></textarea>
     <button class="secondary" id="deepImport">查看导入结果</button><div id="deepImported" class="resultBody"></div>
   </section>
+  <section id="deepImportedPanel" class="panel hidden">
+    <div class="group">第二章 · 来自朋友的独立档案</div>
+    <h1>打开秘密档案啦！</h1>
+    <p class="muted">以下内容来自分享的 MIMAD1 结果码，独立展示，不解锁本机题库，也不会更改你的答案或边界。</p>
+    <div id="deepReadReport" class="resultBody"></div>
+    <div class="sectionTitle">原始结果码</div><textarea id="deepReadCode" readonly rows="5"></textarea>
+    <div class="actions"><button type="button" class="secondary" id="deepReadCopy">复制结果码</button><button type="button" class="secondary" id="deepReadSaveHtml">保存完整 HTML</button><button type="button" class="secondary" id="deepReadSavePng">生成 PNG 长图</button></div>
+    <p id="deepReadStatus" class="exportStatus" role="status"></p><div id="deepReadPngGallery" class="pngGallery"></div>
+    <div class="actions"><button type="button" class="secondary" data-home>返回首页</button></div>
+  </section>
   <section id="importPanel" class="panel hidden">
     <div class="group">导入中心</div><h1>把答案带回来！</h1>
     <p>粘贴网站生成的 MIMA 数据码，或带有 MIMA_QV=0.5.0 版本标记的 AI 答案 <code>Q001=4;Q002=N</code>。不需要调用任何在线模型。未标注版本的旧 AI 答案会作为历史记录查看，避免错用新题干。</p>
@@ -260,7 +285,7 @@ function persist(){
  if(!storageReadVerified){storageFailure(new Error('原存储未验证：只读保护，禁止覆盖'));updateCacheHint();return false;}
  try{sessionStorage.setItem(storageKey,JSON.stringify({answers:state.answers}));storageWritable=true;updateStorageWarning();}catch(err){storageFailure(err);}updateCacheHint();return storageWritable;
 }
-function setScreen(id){for(const id2 of ['welcome','quiz','done','importPanel','pairPanel','glossaryPanel','importedPanel','deepIntro','deepQuiz','deepDone'])$(id2).classList.toggle('hidden',id2!==id);}
+function setScreen(id){for(const id2 of ['welcome','quiz','done','importPanel','pairPanel','glossaryPanel','importedPanel','deepIntro','deepQuiz','deepDone','deepImportedPanel'])$(id2).classList.toggle('hidden',id2!==id);}
 function selectedQ(){return ALL_QUESTIONS.find(q=>q.id===state.ids[state.index]);}
 function cancelAdvance(){if(state.timer!==null){clearTimeout(state.timer);state.timer=null;}}
 function sliderVisual(value, committed){
@@ -941,7 +966,7 @@ function renderPair(a,b,target){validateProfile(a);validateProfile(b);target.rep
  paragraph(target,'提示：报告中的数值是预设规则计算的游戏化指标，并非科学测量或关系质量预测。','reportNote');lab.lastPair={a,b,score};
 }
 function parsePairField(id){return profileFromCode($(id).value);}
-function displayImported(profile){lab.currentImport=profile;if(profile.questionnaire_version==='0.4.0')renderLegacyReport($('importedReport'),profile);else renderReport($('importedReport'),profile);$('importedCode').value=codeFor(profile);tinyStatus('importedFeedback',profile.questionnaire_version==='0.4.0'?'已读取旧版历史记录；无法与新版匹配。':'已生成新版数据码，可分享或双人匹配。');setScreen('importedPanel');}
+function displayImported(profile){lab.currentImport=profile;if(profile.questionnaire_version==='0.4.0')renderLegacyReport($('importedReport'),profile);else renderReport($('importedReport'),profile);appendAnswerDetails($('importedReport'),profile.questionnaire_version==='0.4.0'?LEGACY_QUESTIONS:ALL_QUESTIONS,profile.answers);$('importedCode').value=codeFor(profile);tinyStatus('importedFeedback',profile.questionnaire_version==='0.4.0'?'已读取旧版历史记录；无法与新版匹配。':'已生成新版数据码，可分享或双人匹配。');setScreen('importedPanel');}
 function requireAdult(){if($('adult').checked)return true;$('adult').focus();alert('请先确认已年满18岁，再使用成人偏好测试及报告功能。');return false;}
 $('toImport').addEventListener('click',()=>{if(requireAdult())setScreen('importPanel');});
 $('toPair').addEventListener('click',()=>{if(requireAdult())setScreen('pairPanel');});
@@ -949,7 +974,7 @@ $('toGlossary').addEventListener('click',()=>{if(requireAdult())showGlossary();}
 document.querySelectorAll('[data-home]').forEach(b=>b.addEventListener('click',()=>setScreen('welcome')));
 $('glossSearch').addEventListener('input',()=>renderGlossary());
 $('importJsonFile').addEventListener('change',async()=>{const file=$('importJsonFile').files?.[0];if(!file)return;try{if(file.size>100000)throw Error('JSON 文件过大。');$('importText').value=await file.text();tinyStatus('importFeedback','已读取文件，点击导入生成分析。');}catch(e){tinyStatus('importFeedback',e.message,true);}});
-$('importGo').addEventListener('click',()=>{try{const p=importProfile($('importText').value,$('importName').value,$('importType').value);tinyStatus('importFeedback','导入成功，已经在本地计算报告。');displayImported(p);}catch(err){tinyStatus('importFeedback',err.message,true);}});
+$('importGo').addEventListener('click',()=>{try{viewSharedCode($('importText').value);}catch(err){tinyStatus('importFeedback',err.message,true);}});
 $('doneHome').addEventListener('click',()=>setScreen('welcome'));
 $('jumpResults').addEventListener('click',()=>$('reportInline').scrollIntoView({behavior:'smooth',block:'start'}));
 $('doneToPair').addEventListener('click',()=>{$('pairA').value=codeFor(localProfile());setScreen('pairPanel');});
@@ -1000,6 +1025,23 @@ $('retakeDone').addEventListener('click',restartQuiz);
 
 function safeFileStem(value){return String(value||'匿名档案').replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').slice(0,28)||'匿名档案';}
 function saveBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);return url;}
+function isQQEmbeddedBrowser(){return /(?:QQ\/|MQQBrowser\/|QQBrowser\/|V1_AND_SQ)/i.test(navigator.userAgent||'');}
+function blobAsDataUrl(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error||new Error('本地图片转换失败'));reader.readAsDataURL(blob);});}
+function appendAnswerDetails(root,questions,answers){
+ const d=document.createElement('details');d.className='glossDetails';
+ const title=document.createElement('summary');title.textContent='展开查看这份答卷的逐题选择（含未答题）';d.appendChild(title);
+ const sheet=document.createElement('div');sheet.className='rawAnswerList';
+ const labels={N:'无所谓，都可以',X:'不确定是不是我'};
+ for(const q of questions){
+  const line=document.createElement('div');line.className='rawAnswerRow';
+  const answer=Object.hasOwn(answers,q.id)?answers[q.id]:undefined;
+  const choice=answer===undefined?'未作答':typeof answer==='number'?SCALE_LABELS[answer]:labels[answer]||'未知选项';
+  const heading=document.createElement('strong');heading.textContent=q.id+' · '+choice;
+  const prompt=document.createElement('span');prompt.textContent=q.prompt;
+  line.append(heading,prompt);sheet.appendChild(line);
+ }
+ d.appendChild(sheet);root.appendChild(d);
+}
 function escapedHtml(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function archiveSource(kind){
  if(kind==='own'){
@@ -1120,19 +1162,34 @@ async function handleArchivePng(kind,statusId,galleryId){
    try{blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));}
    catch(e){throw Error('PNG 编码失败：'+e.message);}
    if(!blob)throw Error('当前浏览器无法导出 PNG；可以保存完整 HTML。');
-   const url=URL.createObjectURL(blob);newUrls.push(url);
-   canvas.width=1;canvas.height=1; // Release potentially large pixel buffers before the next preview.
-   const fig=document.createElement('figure'),img=document.createElement('img');img.src=url;img.alt='报告长图第 '+(i+1)+' 页';img.loading='lazy';
-   const caption=document.createElement('figcaption');caption.textContent=`报告长图 ${i+1}/${pages.length} · 包含完整分析及结果码（最后一张）。`;
-   const a=document.createElement('a');a.href=url;a.download=`MIMA_${safeFileStem(src.name)}_长图_${i+1}of${pages.length}.png`;a.textContent='保存第 '+(i+1)+' 张 PNG ↓';
-   const opener=document.createElement('a');opener.href=url;opener.target='_blank';opener.rel='noopener';opener.title='点击查看长图原尺寸';opener.appendChild(img);
-   fig.append(opener,caption,a);newCards.push(fig);
+   // QQ's in-app browser may route blob: download links and target=_blank to external apps.
+   // Embed the picture directly without any navigation. QQ gets a real data:image/png URL
+   // for its native long-press picture menu; other browsers retain an optional download link.
+   const qqBrowser=isQQEmbeddedBrowser();
+   const url=qqBrowser?await blobAsDataUrl(blob):URL.createObjectURL(blob);
+   if(url.startsWith('blob:'))newUrls.push(url);
+   canvas.width=1;canvas.height=1; // Release large pixel buffers after encoding.
+   const fig=document.createElement('figure'),img=document.createElement('img');
+   img.src=url;img.alt='报告长图第 '+(i+1)+' 页；长按图片可尝试保存';img.loading='eager';
+   img.draggable=false;
+   const caption=document.createElement('figcaption');caption.textContent=`报告长图 ${i+1}/${pages.length} · 最后一张包含结果码。`;
+   fig.append(img,caption);
+   if(!qqBrowser){
+    const a=document.createElement('a');a.href=url;a.download=`MIMA_${safeFileStem(src.name)}_长图_${i+1}of${pages.length}.png`;
+    a.textContent='下载第 '+(i+1)+' 张 PNG ↓';fig.appendChild(a);
+   }else{
+    const hint=document.createElement('p');hint.className='qqPngHint';
+    hint.textContent='QQ 内直接长按上方图片，尝试「保存图片」。如果 QQ 禁止保存，请在右上角菜单选择系统浏览器打开当前网页后再导出。';
+    fig.appendChild(hint);
+   }
+   newCards.push(fig);
   }
   // Commit UI only after every part rendered; the previous preview stays on failure.
-  const oldUrls=[...gallery.querySelectorAll('a[href^=\"blob:\"]')].map(a=>a.href);
+  const oldUrls=[...new Set([...gallery.querySelectorAll('a[href^="blob:"],img[src^="blob:"]')].map(n=>n.href||n.src))];
   gallery.replaceChildren(...newCards);
   oldUrls.forEach(url=>URL.revokeObjectURL(url));
-  status.textContent=pages.length===1?'已生成一张完整 PNG 长图；可长按图片保存。':`报告较长，已自动分成 ${pages.length} 张长图以避免手机画布超限；请逐张长按保存（全部包含完整报告）。另可保存单文件 HTML 阅读完整内容。`;
+  const qqNote=isQQEmbeddedBrowser()?'QQ 内置浏览器请直接长按当前页面中的图片；如系统菜单不支持保存，使用右上角菜单转到系统浏览器。':'';
+  status.textContent=(pages.length===1?'已生成完整 PNG 长图。':`已生成 ${pages.length} 张 PNG 长图，需逐张保存。`)+qqNote+' 图片只在本机生成，不会上传。';
  }catch(err){newUrls.forEach(url=>URL.revokeObjectURL(url));status.textContent='图片导出失败：'+err.message+'。可以使用“保存完整报告 HTML”。';console.error('报告长图导出失败',err);}
 }
 $('saveOwnPng').addEventListener('click',()=>handleArchivePng('own','ownExportStatus','ownPngGallery'));
@@ -1349,5 +1406,37 @@ const originalArchiveSourceV12=archiveSource;
 archiveSource=function(kind){if(kind==='deep'){const p=deepProfile();return {title:p.name+' · 第二章独立报告',name:p.name,root:$('deepReport'),code:deepCode(p)};}return originalArchiveSourceV12(kind);};
 $('deepSavePng').addEventListener('click',()=>handleArchivePng('deep','deepStatus','deepPngGallery'));
 
+// v1.2.2 - Public code viewer. Deliberately decoupled from local answers, unlocks and settlements.
+let importedDeepProfile=null;
+function viewSharedCode(input){
+ const raw=String(input||'').trim();
+ if(!raw)throw Error('请先粘贴结果码。');
+ if(/^MIMAD1-/.test(raw)||/^MIMA_DQV\s*=/.test(raw)){
+  const profile=deepFromCode(raw);importedDeepProfile=profile;
+  deepRenderReport($('deepReadReport'),profile);
+  appendAnswerDetails($('deepReadReport'),DEEP_QUESTIONS,profile.answers);
+  $('deepReadCode').value=deepCode(profile);$('deepReadPngGallery').replaceChildren();
+  $('deepReadStatus').textContent='已读取第二章独立档案。未写入本机历史。';
+  setScreen('deepImportedPanel');return;
+ }
+ const profile=importProfile(raw,$('importName').value,$('importType').value);
+ displayImported(profile);
+}
+$('homeCodeView').addEventListener('click',()=>{
+ if(!requireAdult())return;
+ try{viewSharedCode($('homeCodeInput').value);$('homeCodeFeedback').textContent='';}
+ catch(err){$('homeCodeFeedback').textContent='无法读取结果码：'+err.message;}
+});
+$('deepReadCopy').addEventListener('click',()=>copyText($('deepReadCode').value,$('deepReadStatus')));
+const previousArchiveSourceV122=archiveSource;
+archiveSource=function(kind){
+ if(kind==='deep-imported'){
+  if(!importedDeepProfile)throw Error('还没有导入第二章档案');
+  return {title:importedDeepProfile.name+' · 第二章独立档案',name:importedDeepProfile.name,root:$('deepReadReport'),code:deepCode(importedDeepProfile)};
+ }
+ return previousArchiveSourceV122(kind);
+};
+$('deepReadSaveHtml').addEventListener('click',()=>handleArchiveHtml('deep-imported','deepReadStatus'));
+$('deepReadSavePng').addEventListener('click',()=>handleArchivePng('deep-imported','deepReadStatus','deepReadPngGallery'));
 </script>
 </body></html>
